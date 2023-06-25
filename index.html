@@ -18,14 +18,19 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
     />
     <!-- MDB -->
-    <link rel="stylesheet" href="css/mdb.min.css" />
+    <link rel="stylesheet" href="css/mdb.dark.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <!-- Start your project here-->
     <div id="container" class="d-flex flex-row vw-100 vh-100" style="overflow: hidden;">
       <div id="left-container" style="width: 30%;" class="d-flex flex-column"></div>
       <div id="middle-container" style="width: 40%;" class="d-flex flex-column">
-        <img id="display-container" class="rounded-7 mt-5 mb-5 align-self-center" style="width: 20vw; min-width: 200px; margin-top: 10%; aspect-ratio: 3 / 4; border: 1px dashed grey; "></img>
+        <!-- <img id="display-container" class="rounded-7 mt-5 mb-5 align-self-center" style="width: 20vw; min-width: 200px; margin-top: 10%; aspect-ratio: 3 / 4; border: 1px dashed grey; "></img> -->
+        <div class="drop-zone mt-5 mb-5 align-self-center" style="width: 20vw; min-width: 200px; margin-top: 10%; aspect-ratio: 3 / 4; border: 1px dashed grey; ">
+          <span class="drop-zone_instruction">Drop file here or click to upload</span>
+          <input type="file" name="myFile" class="drop-zone_input">
+        </div>
         <button type="button" class="btn btn-outline-success align-self-center" data-mdb-ripple-color="dark" style="width: 100px;">Next</button>
       </div>
       <div id="right-container" style="width: 30%;" class="d-flex flex-column">
