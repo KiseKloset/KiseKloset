@@ -7,12 +7,15 @@ function fill_samples(samples) {
         wrapper.classList.add("bg-image");
         wrapper.classList.add("mb-3");
         wrapper.style.width = "40%";
+		wrapper.style.position = "relative";
 
         const image = document.createElement("img");
         image.classList.add("img-fluid");
         image.classList.add("image");
         image.style.aspectRatio = "3 / 4";
-        image.src = sample; 
+		image.style.borderRadius = "7px";
+		image.style.cursor = "pointer";
+        image.src = sample; 	
 
         wrapper.appendChild(image);
         container.appendChild(wrapper);
@@ -28,8 +31,8 @@ for (let i = 0; i < 18; ++i) {
 fill_samples(samples)
 
 
-document.querySelectorAll(".drop-zone_input").forEach((inputElement) => {
-	const dropZoneElement = inputElement.closest(".drop-zone");
+document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
+	const inputElement = dropZoneElement.querySelector("input");
 
 	dropZoneElement.addEventListener("click", (e) => {
 		inputElement.click();
@@ -43,12 +46,12 @@ document.querySelectorAll(".drop-zone_input").forEach((inputElement) => {
 
 	dropZoneElement.addEventListener("dragover", (e) => {
 		e.preventDefault();
-		dropZoneElement.classList.add("drop-zone--over");
+		dropZoneElement.classList.add("active");
 	});
 
 	["dragleave", "dragend"].forEach((type) => {
 		dropZoneElement.addEventListener(type, (e) => {
-			dropZoneElement.classList.remove("drop-zone--over");
+			dropZoneElement.classList.remove("active");
 		});
 	});
 
@@ -60,7 +63,7 @@ document.querySelectorAll(".drop-zone_input").forEach((inputElement) => {
 			updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
 		}
 
-		dropZoneElement.classList.remove("drop-zone--over");
+		dropZoneElement.classList.remove("active");
 	});
 });
 
@@ -71,17 +74,16 @@ document.querySelectorAll(".drop-zone_input").forEach((inputElement) => {
  * @param {File} file
  */
 function updateThumbnail(dropZoneElement, file) {
-	let thumbnailElement = dropZoneElement.querySelector(".drop-zone_thumb");
+	let thumbnailElement = dropZoneElement.querySelector("thumb");
 
 	// First time - remove the prompt
-	if (dropZoneElement.querySelector(".drop-zone_instruction")) {
-		dropZoneElement.querySelector(".drop-zone_instruction").remove();
+	if (dropZoneElement.querySelector(".upload-drop-zone_instruction")) {
+		dropZoneElement.querySelector(".upload-drop-zone_instruction").remove();
 	}
 
 	// First time - there is no thumbnail element, so lets create it
 	if (!thumbnailElement) {
-		thumbnailElement = document.createElement("div");
-		thumbnailElement.classList.add("drop-zone_thumb");
+		thumbnailElement = document.createElement("thumb");
 		dropZoneElement.appendChild(thumbnailElement);
 	}
 
