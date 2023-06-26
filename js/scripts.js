@@ -6,7 +6,7 @@ function fill_samples(samples) {
         wrapper.classList.add("hover-zoom");
         wrapper.classList.add("bg-image");
         wrapper.classList.add("mb-3");
-        wrapper.style.width = "40%";
+        wrapper.style.width = "50%";
 		wrapper.style.position = "relative";
 
         const image = document.createElement("img");
@@ -17,20 +17,57 @@ function fill_samples(samples) {
 		image.style.cursor = "pointer";
         image.src = sample; 	
 
+		image.addEventListener("click", () => {
+            handleImageClick(sample); // Call your custom onClick function with the corresponding index
+        });
+
         wrapper.appendChild(image);
         container.appendChild(wrapper);
     })
 }
 
+// Custom onClick function
+function handleImageClick(image_url) {
+	let dropZoneElement = document.querySelector(".upload-drop-zone");
+	let thumbnailElement = dropZoneElement.querySelector("thumb");
 
-const samples = []
-for (let i = 0; i < 18; ++i) {
-    samples.push("img/person.jpg");
+	// First time - remove the prompt
+	if (dropZoneElement.querySelector("#upload-instruction")) {
+		dropZoneElement.querySelector("#upload-instruction").remove();
+	}
+
+	// First time - there is no thumbnail element, so lets create it
+	if (!thumbnailElement) {
+		thumbnailElement = document.createElement("thumb");
+		dropZoneElement.appendChild(thumbnailElement);
+	}
+
+	thumbnailElement.style.backgroundImage = `url('${image_url}')`;
 }
 
-fill_samples(samples)
+
+function get_sample(type){
+	let samples = []
+	if (type=="model"){
+		for (let i = 0; i < 18; ++i) {
+			samples.push("img/model/person.jpg");
+		}
+	}
+	else if (type=="garment"){
+		for (let i = 0; i < 18; ++i) {
+			samples.push("img/model/person.jpg");
+		}
+	}
+
+	return samples
+}
 
 
+fill_samples(get_sample("model"))
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Upload image
 document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
 	const inputElement = dropZoneElement.querySelector("input");
 
@@ -41,6 +78,7 @@ document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
 	inputElement.addEventListener("change", (e) => {
 		if (inputElement.files.length) {
 			updateThumbnail(dropZoneElement, inputElement.files[0]);
+			inputElement.value = "";
 		}
 	});
 
@@ -67,18 +105,13 @@ document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
 	});
 });
 
-/**
- * Updates the thumbnail on a drop zone element.
- *
- * @param {HTMLElement} dropZoneElement
- * @param {File} file
- */
+
 function updateThumbnail(dropZoneElement, file) {
 	let thumbnailElement = dropZoneElement.querySelector("thumb");
 
 	// First time - remove the prompt
-	if (dropZoneElement.querySelector(".upload-drop-zone_instruction")) {
-		dropZoneElement.querySelector(".upload-drop-zone_instruction").remove();
+	if (dropZoneElement.querySelector("#upload-instruction")) {
+		dropZoneElement.querySelector("#upload-instruction").remove();
 	}
 
 	// First time - there is no thumbnail element, so lets create it
@@ -87,17 +120,35 @@ function updateThumbnail(dropZoneElement, file) {
 		dropZoneElement.appendChild(thumbnailElement);
 	}
 
-	thumbnailElement.dataset.label = file.name;
-
 	// Show thumbnail for image files
 	if (file.type.startsWith("image/")) {
 		const reader = new FileReader();
-
 		reader.readAsDataURL(file);
 		reader.onload = () => {
 			thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
 		};
+
 	} else {
 		thumbnailElement.style.backgroundImage = null;
 	}
 }
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Flow change
+// let current_step = 1;
+// const control_buttons = document.querySelector("#control-button");
+// control_buttons.addEventListener("click", () => {
+// 	let thumbnailElement = document.querySelector(".upload-drop-zone").querySelector("thumb");
+// 	if (!thumbnailElement) {
+// 		alert("Please upload OR select an image first!");
+// 		return;
+// 	}
+
+// 	if (current_step == 1) {
+// 		let 
+// 	}
+	
+
+// });
