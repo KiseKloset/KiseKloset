@@ -1,5 +1,6 @@
-function fill_samples(samples) {
-    const container = document.getElementById("sample-container");
+function setup_samples(samples) {
+    const container = document.getElementById("#sample-container");
+	container.innerHTML = '';
 
     samples.forEach(sample => {
         const wrapper = document.createElement("div");
@@ -55,7 +56,7 @@ function get_sample(type){
 	}
 	else if (type=="garment"){
 		for (let i = 0; i < 18; ++i) {
-			samples.push("img/model/person.jpg");
+			samples.push("img/garment/garment.jpg");
 		}
 	}
 
@@ -63,11 +64,20 @@ function get_sample(type){
 }
 
 
-fill_samples(get_sample("model"))
+setup_samples(get_sample("model"));
+setup_upload_container();
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Upload image
+function setup_upload_container(){
+	container = document.querySelector("#middle-container");
+	const step_instruction = container.querySelector("#step-instruction");
+	const upload_instructor = container.querySelector("#upload-instruction");
+	step_instruction.innerHTML = "Step 1: Upload an image of a person";
+	upload_instructor.innerHTML = "Click here to upload an image";
+}
+
 document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
 	const inputElement = dropZoneElement.querySelector("input");
 
@@ -137,18 +147,33 @@ function updateThumbnail(dropZoneElement, file) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Flow change
-// let current_step = 1;
-// const control_buttons = document.querySelector("#control-button");
-// control_buttons.addEventListener("click", () => {
-// 	let thumbnailElement = document.querySelector(".upload-drop-zone").querySelector("thumb");
-// 	if (!thumbnailElement) {
-// 		alert("Please upload OR select an image first!");
-// 		return;
-// 	}
+let current_step = 1;
+let person_image = document.querySelector("#person-frame").querySelector(".image-frame");
+let garment_image = document.querySelector("#garment-frame").querySelector(".image-frame");
+const control_buttons = document.querySelector("#control-button");
+function set_frame(frame, imageSrc){
+	frame.innerHTML = '';
+	frame.style.backgroundImage = imageSrc;
+}
 
-// 	if (current_step == 1) {
-// 		let 
-// 	}
+control_buttons.addEventListener("click", () => {
+	let thumbnailElement = document.querySelector(".upload-drop-zone").querySelector("thumb");
+	if (!thumbnailElement) {
+		alert("Please upload OR select an image first!");
+		return;
+	}
+
+	if (current_step == 1) {
+		current_step = 2;
+		set_frame(person_image, thumbnailElement.style.backgroundImage);
+		setup_samples(get_sample("garment"));
+	}
+
+	else if (current_step == 2) {
+		current_step = 3;
+		set_frame(garment_image, thumbnailElement.style.backgroundImage);
+		document.getElementById("sample-container").innerHTML = '';
+	}
 	
 
-// });
+});

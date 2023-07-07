@@ -23,38 +23,35 @@
   </head>
   <body>
     <!-- Start your project here-->
-    <div id="container" class="d-flex flex-column vw-100 vh-100" style="overflow: hidden; background-color: #232428;">
+    <div id="header-container" class="d-flex flex-column vw-100 vh-100" style="overflow: hidden; background-color: #232428;">
       <header class="card-header">
-        <h3 class="text-white mt-2 mb-2" style="margin-left: 0.5%;"> Tehesis </h3>
+        <h3 class="text-white mt-2 mb-2" style="margin-left: 0.5%;"> Smart Fashion Assistant </h3>
       </header>
 
-      <div id="container" class="d-flex flex-column vh-100 mt-5"  style="margin-left: 15%; margin-right: 15%;">
+      <div id="body-container" class="d-flex flex-column vh-100 mt-5"  style="margin-left: 15%; margin-right: 15%;">
         <div id="tryon-container" class="d-flex flex-row" style="width: 100%; height: 70%;">
 
-          <div id="left-container" class="d-flex flex-column align-items-center" style="width: 20%">
-              <div class="mt-5">
-                <div id="person-frame" class="mb-5">
-                  <p class="text-white" style="text-align: center;"> Model </p>
-                  <div class="image-frame" style="width: 7vw; min-width: 100px; aspect-ratio: 3 / 4;">
-                    <i class="fa-solid fa-user-tie fa-2xl" style="color: #5fcda4;"></i>
-                  </div>
-                </div>
-                <div id="garment-frame" class="mb-5">
-                  <p class="text-white" style="text-align: center;"> Garment </p>
-                  <div class="image-frame" style="width: 7vw; min-width: 100px; aspect-ratio: 3 / 4;">
-                    <i class="fa-solid fa-shirt fa-2xl" style="color: #a0eaea;"></i>
-                  </div>
-                </div>
+          <div id="left-container" class="d-flex flex-column align-items-center mt-5" style="width: 20%">
+            <div id="person-frame" class="mb-5">
+              <p class="text-white" style="text-align: center;"> Model </p>
+              <div class="image-frame" style="width: 7vw; min-width: 100px; aspect-ratio: 3 / 4;">
+                <i class="fa-solid fa-user-tie fa-2xl" style="color: #5fcda4;"></i>
+              </div>
+            </div>
+            <div id="garment-frame" class="mb-5">
+              <p class="text-white" style="text-align: center;"> Garment </p>
+              <div class="image-frame" style="width: 7vw; min-width: 100px; aspect-ratio: 3 / 4;">
+                <i class="fa-solid fa-shirt fa-2xl" style="color: #a0eaea;"></i>
+              </div>
             </div>
           </div>
 
           <div id="middle-container" class="d-flex flex-column align-items-center" style="width: 55%;" >
             <!-- <img id="display-container" class="rounded-7 mt-5 mb-5 align-self-center" style="width: 20vw; min-width: 200px; margin-top: 10%; aspect-ratio: 3 / 4; border: 1px dashed grey; "></img> -->
-            <p id="step-instruction" class="mb-3" style="text-align: center; font-size: 20px; color: #cccccc;"> 
-              Step 1: Upload your model photo OR select from our list, then click "Next".
+            <p id="step-instruction" style="text-align: center; font-size: 20px; color: #cccccc;"> 
             </p>
             <div class="upload-drop-zone mb-5" style="width: 20vw; min-width: 200px; aspect-ratio: 3 / 4;">
-              <span id="upload-instruction">Drop file here or click to upload</span>
+              <span id="upload-instruction"></span>
               <input type="file" name="myFile">
             </div>
             <a id="control-button" class="btn btn-primary text-white shadow-none" style="width: 100px;" href="#!" role="button">
@@ -69,11 +66,11 @@
           </div>
         </div>
 
-        <div id="recommend-container" class="d-flex flex-column" style="width: 100%; height: 30%;">
+        <!-- <div id="recommend-container" class="d-flex flex-column" style="width: 100%; height: 30%;">
           <div id="left-container" style="width: 30%;" class="justify-content-center mx-auto">
             <i class="fas fa-caret-right fa-lg me-2"></i>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
