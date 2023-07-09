@@ -1,5 +1,6 @@
 import base64
 from io import BytesIO
+from pathlib import Path
 
 from fastapi import APIRouter, UploadFile
 from fastapi.responses import JSONResponse
@@ -10,24 +11,27 @@ from .utils import gdrive_download, url_download
 
 router = APIRouter()
 
+CKPT_PATH = Path('model')
+CKPT_PATH.mkdir(parents=True, exist_ok=True)
+
 gdrive_download(
-    url='https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy', output='u2netp.pt'
+    url='https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy', output=str(CKPT_PATH / 'u2netp.pt')
 )
 gdrive_download(
-    url='https://drive.google.com/uc?id=1ngpLuaiDbMBT2qrxft82Ujy_rxggsvyZ', output='mobile_warp.pt'
+    url='https://drive.google.com/uc?id=1ngpLuaiDbMBT2qrxft82Ujy_rxggsvyZ', output=str(CKPT_PATH / 'mobile_warp.pt')
 )
 gdrive_download(
-    url='https://drive.google.com/uc?id=1eAAMkxFDum1sKPqyi1BSQ1aRc69T5onI', output='mobile_gen.pt'
+    url='https://drive.google.com/uc?id=1eAAMkxFDum1sKPqyi1BSQ1aRc69T5onI', output=str(CKPT_PATH / 'mobile_gen.pt')
 )
 url_download(
     url='https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-w6-pose.pt',
-    output='yolov7-w6-pose.pt',
+    output=str(CKPT_PATH / 'yolov7-w6-pose.pt'),
 )
 
 tryon_service = TryonService(
-    tryon_ckpt={'warp': 'mobile_warp.pt', 'gen': 'mobile_gen.pt'},
-    edge_detect_ckpt='u2netp.pt',
-    yolo_ckpt='yolov7-w6-pose.pt',
+    tryon_ckpt={'warp': CKPT_PATH / 'mobile_warp.pt', 'gen': CKPT_PATH / 'mobile_gen.pt'},
+    edge_detect_ckpt=CKPT_PATH / 'u2netp.pt',
+    yolo_ckpt=CKPT_PATH / 'yolov7-w6-pose.pt',
     device='cuda:0',
 )
 
