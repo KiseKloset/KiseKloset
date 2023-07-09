@@ -1,3 +1,27 @@
+function convertImagePathToDataURL(imageElement, imagePath) {
+  var image = new Image();
+  image.src = imagePath;
+
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+
+  image.onload = function() {
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    context.drawImage(image, 0, 0);
+
+    var dataURL = canvas.toDataURL("image/jpeg"); // Change "image/jpeg" to the desired image format if needed
+
+    // Assign the data URL to the image_url variable or use it as desired
+    var image_url = dataURL;
+
+    // Use the image_url variable here or return it if needed
+    imageElement.src = image_url;
+  };
+}
+
+
 function setup_samples(samples) {
     const container = document.getElementById("sample-container");
 	container.innerHTML = '';
@@ -17,10 +41,10 @@ function setup_samples(samples) {
 			image.style.aspectRatio = "3 / 4";
 			image.style.borderRadius = "7px";
 			image.style.cursor = "pointer";
-			image.src = sample;
+			convertImagePathToDataURL(image, sample);
 
 			image.addEventListener("click", () => {
-				handleImageClick(sample); // Call your custom onClick function with the corresponding index
+				handleImageClick(image.src); // Call your custom onClick function with the corresponding index
 			});
 
 			wrapper.appendChild(image);
@@ -53,12 +77,12 @@ function get_sample(type){
 	let samples = []
 	if (type=="model"){
 		for (let i = 0; i < 18; ++i) {
-			samples.push("samples/model/person.jpg");
+			samples.push("static/samples/model/person.jpg");
 		}
 	}
 	else if (type=="garment"){
 		for (let i = 0; i < 18; ++i) {
-			samples.push("samples/garment/garment.jpg");
+			samples.push("static/samples/garment/garment.jpg");
 		}
 	}
 
@@ -75,9 +99,11 @@ function setup_upload_container(step){
 	container = document.querySelector("#middle-container");
 	const step_instruction = container.querySelector("#step-instruction");
 	const upload_instructor = container.querySelector("#upload-instruction");
-	upload_instructor.style.display = "block";
-
-	upload_instructor.innerHTML = "Drop file here or click to upload";
+	if (upload_instructor){
+		upload_instructor.style.display = "block";
+		upload_instructor.innerHTML = "Drop file here or click to upload";
+	}
+	
 	if (step==1){
 		step_instruction.innerHTML = "Step 1: Upload your model OR select from list, then click \"Next\"";
 	}
@@ -170,8 +196,8 @@ function set_frame(frame, imageSrc){
 	frame.style.backgroundImage = imageSrc;
 }
 
-function dataURLtoFile(dataurl, filename) {
-    let arr = dataurl.split(','),
+function dataURLtoFile(datauURL, filename) {
+    let arr = datauURL.split(','),
         mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[arr.length - 1]),
         n = bstr.length,
@@ -207,7 +233,10 @@ control_buttons.addEventListener("click", () => {
 		set_frame(garment_image, thumbnailElement.style.backgroundImage);
 		document.getElementById("sample-container").innerHTML = '';
 		setup_samples(null);
-		document.querySelector("#upload-instruction").remove();
+		uinstruction = document.querySelector("#upload-instruction")
+		if (uinstruction){
+			uinstruction.remove();
+		}
 
 		person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 		garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));

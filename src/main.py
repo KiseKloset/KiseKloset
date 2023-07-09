@@ -48,7 +48,7 @@ def perform_healthcheck() -> None:
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
-    with open(ROOT / "static/index.html") as f:
+    with open(ROOT / "templates/index.html") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content, status_code=200)
 

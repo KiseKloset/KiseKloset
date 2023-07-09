@@ -19,10 +19,10 @@ def load_model(model_name, checkpoint, device=torch.device('cuda')):
         device = torch.device('cpu')
 
     if model_name == 'u2net':
-        print("\t[-] Lload U2NET---173.6 MB")
+        # print("\t[-] Lload U2NET---173.6 MB")
         net = U2NET(3, 1)
     elif model_name == 'u2netp':
-        print("\t[-] Load U2NEP---4.7 MB")
+        # print("\t[-] Load U2NEP---4.7 MB")
         net = U2NETP(3, 1)
 
     net.load_state_dict(torch.load(checkpoint, map_location='cpu'))
