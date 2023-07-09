@@ -1,10 +1,10 @@
-import cupy
+# import cupy
 import torch
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
 
-from .models.afwm_test import AFWM
+# from .models.afwm_test import AFWM
 from .models.mobile_unet_generator import MobileNetV2_unet
 from .utils.torch_utils import get_ckpt, load_ckpt
 
@@ -14,9 +14,9 @@ class DMVTON:
         self.device = device
         self.align_corners = align_corners
 
-        self.warp_model = AFWM(3, align_corners).to(device)
-        load_ckpt(self.warp_model, get_ckpt(ckpt_path['warp']))
-        self.warp_model.eval()
+        # self.warp_model = AFWM(3, align_corners).to(device)
+        # load_ckpt(self.warp_model, get_ckpt(ckpt_path['warp']))
+        # self.warp_model.eval()
         self.gen_model = MobileNetV2_unet(7, 4).to(device)
         load_ckpt(self.gen_model, get_ckpt(ckpt_path['gen']))
         self.gen_model.eval()
@@ -31,29 +31,30 @@ class DMVTON:
         clothes_edge = (clothes_edge > 0.5).float()
         clothes = clothes * clothes_edge
 
-        with cupy.cuda.Device(int(self.device.split(':')[-1])):
-            flow_out = self.warp_model(img, clothes)
-            (
-                warped_clothes,
-                last_flow,
-            ) = flow_out
-            warped_edge = F.grid_sample(
-                clothes_edge,
-                last_flow.permute(0, 2, 3, 1),
-                mode='bilinear',
-                padding_mode='zeros',
-                align_corners=self.align_corners,
-            )
+        # with cupy.cuda.Device(int(self.device.split(':')[-1])):
+        #     flow_out = self.warp_model(img, clothes)
+        #     (
+        #         warped_clothes,
+        #         last_flow,
+        #     ) = flow_out
+        #     warped_edge = F.grid_sample(
+        #         clothes_edge,
+        #         last_flow.permute(0, 2, 3, 1),
+        #         mode='bilinear',
+        #         padding_mode='zeros',
+        #         align_corners=self.align_corners,
+        #     )
 
-        gen_inputs = torch.cat([img, warped_clothes, warped_edge], 1)
-        gen_outputs = self.gen_model(gen_inputs)
-        p_rendered, m_composite = torch.split(gen_outputs, [3, 1], 1)
-        p_rendered = torch.tanh(p_rendered)
-        m_composite = torch.sigmoid(m_composite)
-        m_composite = m_composite * warped_edge
-        p_tryon = warped_clothes * m_composite + p_rendered * (1 - m_composite)
+        # gen_inputs = torch.cat([img, warped_clothes, warped_edge], 1)
+        # gen_outputs = self.gen_model(gen_inputs)
+        # p_rendered, m_composite = torch.split(gen_outputs, [3, 1], 1)
+        # p_rendered = torch.tanh(p_rendered)
+        # m_composite = torch.sigmoid(m_composite)
+        # m_composite = m_composite * warped_edge
+        # p_tryon = warped_clothes * m_composite + p_rendered * (1 - m_composite)
 
-        return p_tryon
+        # return p_tryon
+        return clothes + (1 - clothes_edge) * img
 
 
 def get_transform(train, method=Image.BICUBIC, normalize=True):
