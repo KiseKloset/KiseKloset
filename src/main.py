@@ -1,3 +1,6 @@
+import os
+import gdown
+import zipfile
 from pathlib import Path
 
 from fastapi import FastAPI, Request, status
@@ -15,11 +18,19 @@ from api.retrieval.router import router as retrieval_router
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent
-
+STATIC_PATH = ROOT / "static"
 
 app = FastAPI(title='Smart Fashion API', version='1.1.0')
-app.mount("/static", StaticFiles(directory=ROOT / "static"))
+app.mount("/static", StaticFiles(directory=STATIC_PATH))
 
+
+if not (STATIC_PATH / "images").exists():
+    STATIC_PATH.mkdir(parents=True, exist_ok=True)
+    out = str(STATIC_PATH / "images.zip")
+    gdown.download("https://drive.google.com/uc?id=1pNIbQcflAlyUAYypASSy7UfevI4sFcMC", out)
+    with zipfile.ZipFile(out, 'r') as zip_ref:
+        zip_ref.extractall(str(STATIC_PATH))
+    os.remove(out)  
 
 origins = ['*']
 app.add_middleware(

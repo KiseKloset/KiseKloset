@@ -3,6 +3,9 @@ import pickle
 import sys
 from pathlib import Path
 
+import os
+import gdown
+import zipfile
 import numpy as np
 import PIL.Image
 import torch
@@ -21,6 +24,14 @@ def preload(device):
     pretrained_dir = ROOT / "pretrained"
     data_dir = ROOT / "dataset"
     content = {}
+
+    if not (pretrained_dir / "clip_ft.pt").exists():
+        pretrained_dir.mkdir(parents=True, exist_ok=True)
+        out = str(pretrained_dir / "pretrained.zip")
+        gdown.download("https://drive.google.com/uc?id=1qRP24WngO52MlxXVHOVzhXHql9GlsaUg", out)
+        with zipfile.ZipFile(out, 'r') as zip_ref:
+            zip_ref.extractall(str(pretrained_dir))
+        os.remove(out)   
 
     # Load models
     content["models"] = {}
