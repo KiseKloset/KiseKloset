@@ -13,6 +13,7 @@ opencv-python==4.7.0.72
 scipy
 matplotlib
 pyyaml
+git+https://github.com/openai/CLIP.git
 
 # Download
 gdown==4.7.1

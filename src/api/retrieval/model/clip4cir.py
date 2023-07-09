@@ -95,6 +95,9 @@ class CLIP4CirModule:
 
     def __call__(self, image, caption):
         reference_features = self.encode_image(image)
+        if len(caption) == 0:
+            return reference_features
+
         text_inputs = clip.tokenize(caption, truncate=True).to(self.device)
 
         with torch.no_grad():

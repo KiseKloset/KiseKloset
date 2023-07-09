@@ -9,7 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from api.tryon.router import router as tryon_router
 from config import settings
 
-# from api.retrieval.router import router as retrieval_router
+from api.retrieval import service
+from api.retrieval.router import router as retrieval_router
 
 
 FILE = Path(__file__).resolve()
@@ -28,6 +29,13 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
 )
+
+
+# Preload model, data, ...
+@app.on_event('startup')
+async def startup_event():
+    app.state.static_files = { "directory": str(ROOT / "static"), "prefix": "/static" }
+    app.state.retrieval_content = service.preload("cpu")
 
 
 @app.exception_handler(RequestValidationError)
@@ -54,7 +62,7 @@ async def home():
 
 
 app.include_router(tryon_router, prefix="/try-on")
-# app.include_router(retrieval_router, prefix="/retrieval")
+app.include_router(retrieval_router, prefix="/retrieval")
 
 
 if __name__ == '__main__':
