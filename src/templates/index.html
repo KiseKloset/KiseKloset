@@ -18,6 +18,7 @@
     <!-- MDB -->
     <link rel="stylesheet" href="static/css/mdb.dark.min.css" />
     <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/css/slider.css" />
   </head>
   <body>
     <!-- Start your project here-->
@@ -48,9 +49,20 @@
             <!-- <img id="display-container" class="rounded-7 mt-5 mb-5 align-self-center" style="width: 20vw; min-width: 200px; margin-top: 10%; aspect-ratio: 3 / 4; border: 1px dashed grey; "></img> -->
             <p id="step-instruction" style="text-align: center; font-size: 20px; color: #cccccc;">
             </p>
-            <div class="upload-drop-zone mb-5" style="width: 20vw; min-width: 200px; aspect-ratio: 3 / 4;">
+            <div id="upload-zone" class="bal-container upload-drop-zone mb-5" style="width: 20vw; min-width: 200px; aspect-ratio: 3 / 4;">
               <span id="upload-instruction"></span>
-              <input type="file" name="myFile">
+              <input id="upload-input" type="file" name="myFile">
+              <div id="result-after-container" class="bal-after" style="display: none;">
+                <img id="result-after" style="width: 20vw; min-width: 200px; aspect-ratio: 3 / 4;">
+              </div>
+              <div id="result-before-container" class="bal-before" style="display: none;">
+                <div class="bal-before-inset"></div>
+                <img id="result-before" style="width: 20vw; min-width: 200px; aspect-ratio: 3 / 4;">
+              </div>
+              <div id="result-slider" class="bal-handle" style="display: none;">
+                <span class=" handle-left-arrow"></span>
+                <span class="handle-right-arrow"></span>
+              </div>
             </div>
             <a id="control-button" class="btn btn-primary text-white shadow-none" style="width: 100px;" href="#!" role="button">
               <i class="fas fa-caret-right fa-lg me-2"></i>
@@ -76,5 +88,6 @@
     <!-- <script type="text/javascript" src="static/js/mdb.min.js"></script> -->
     <!-- Custom scripts -->
     <script type="text/javascript" src="static/js/scripts.js"></script>
+    <script type="text/javascript" src="static/js/slider.js"></script>
   </body>
 </html>
