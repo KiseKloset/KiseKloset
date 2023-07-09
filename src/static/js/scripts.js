@@ -1,3 +1,5 @@
+let current_step = 1;
+
 function convertImagePathToDataURL(imageElement, imagePath) {
   var image = new Image();
   image.src = imagePath;
@@ -119,7 +121,9 @@ document.querySelectorAll(".upload-drop-zone").forEach((dropZoneElement) => {
 	const inputElement = dropZoneElement.querySelector("input");
 
 	dropZoneElement.addEventListener("click", (e) => {
-		inputElement.click();
+		if (current_step <= 2) {
+			inputElement.click();
+		}
 	});
 
 	inputElement.addEventListener("change", (e) => {
@@ -187,7 +191,6 @@ function setup_textbox(){
 
 ///////////////////////////////////////////////////////////////////////////////
 // Flow change
-let current_step = 1;
 let person_image = document.querySelector("#person-frame").querySelector(".image-frame");
 let garment_image = document.querySelector("#garment-frame").querySelector(".image-frame");
 const control_buttons = document.querySelector("#control-button");
@@ -244,6 +247,8 @@ control_buttons.addEventListener("click", () => {
 
 		setup_upload_container(3);
 		current_step = 3;
+
+		control_buttons.style.display = "none";
 	}
 });
 
@@ -262,10 +267,40 @@ function tryOn(display_frame, person_url, garment_url) {
     }).then(async (response) => {
         let data = await response.json();
         if (data["message"] == "success") {
-            display_frame.style.backgroundImage = `url('${data["result"]}')`;
+			const old_data = URLtoData(person_image.style.backgroundImage);
+			const new_data = data["result"];
+			show_before_after_result(old_data, new_data);
         }
         else {
             window.alert("Something wrong. Please check your input and try again next time");
         }
     })
+}
+
+///////////////////////////////////
+// After-before effect
+
+let current_slider = null;
+
+function show_before_after_result(before_data, after_data) {
+	current_slider = null;
+	can_upload = false;
+
+	const upload_container = document.getElementById("upload-zone");
+	const thumbnailElement = upload_container.querySelector("thumb");
+	thumbnailElement.remove()
+	upload_container.disabled = true;
+
+	show(document.getElementById("result-before-container"));
+	document.getElementById("result-before").src = before_data;
+
+	show(document.getElementById("result-after-container"));
+	document.getElementById("result-after").src = after_data;
+	
+	show(document.getElementById("result-slider"));
+	current_slider = new BeforeAfter("upload-zone");
+}
+
+function show(element) {
+	element.style.display = "block";
 }
