@@ -244,6 +244,7 @@ control_buttons.addEventListener("click", () => {
 		person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 		garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
 		tryOn(thumbnailElement, person_url, garment_url);
+		runRecommendation(garment_url);
 
 		setup_upload_container(3);
 		current_step = 3;
@@ -303,4 +304,77 @@ function show_before_after_result(before_data, after_data) {
 
 function show(element) {
 	element.style.display = "block";
+}
+
+/////////////////////////////////////
+// Recommendation
+
+function runRecommendation(garment_url) {
+    const body = new FormData();
+    body.append("ref_image", garment_url);
+    body.append("caption", "");
+
+	fetch('/retrieval', {
+		method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+        },
+        body: body
+	}).then(async (response) => {
+        const data = await response.json();
+		const results = parseResults(data);
+		showResults(results)
+	})
+}
+
+function parseResults(data) {
+	const results = {
+		"intra": [], 
+		"inter": [] 
+	}
+	console.log(data);
+	for (let i in data) {
+		if (i.startsWith("Target ")) {
+			for (let item in data[i]) {
+				results.intra.push(data[i][item]["url"]);
+			}
+		} else {
+			results.inter.push(data[i][0]["url"]);
+		}
+	}
+	return results;
+}
+
+function showResults(results) {
+	document.getElementById("retrieval-container").style.display = "block";
+	showResult("intra-results", results.intra);	
+	showResult("inter-results", results.inter);	
+}
+
+function showResult(containerId, results) {
+	const container = document.getElementById(containerId);
+	container.innerHTML = '';
+
+	if (results){
+		results.forEach(sample => {
+			const wrapper = document.createElement("div");
+			wrapper.classList.add("hover-zoom");
+			wrapper.classList.add("bg-image");
+			wrapper.classList.add("ps-0");
+			wrapper.classList.add("pe-0");
+			wrapper.style.width = "10%";
+			wrapper.style.position = "relative";
+
+			const image = document.createElement("img");
+			image.classList.add("img-fluid");
+			image.classList.add("image");
+			image.style.aspectRatio = "3 / 4";
+			image.style.cursor = "pointer";
+			image.style.objectFit = "cover";
+			convertImagePathToDataURL(image, sample);
+
+			wrapper.appendChild(image);
+			container.appendChild(wrapper);
+		})
+	}
 }
