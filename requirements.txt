@@ -9,7 +9,11 @@ uvicorn==0.22.0
 torch==1.13.1
 torchvision==0.14.1
 cupy-cuda11x==12.1.0
-opencv-python==4.1.1
+opencv-python==4.7.0.72
+scipy
+matplotlib
+pyyaml
+git+https://github.com/openai/CLIP.git
 
 # Download
 gdown==4.7.1

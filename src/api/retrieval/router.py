@@ -5,7 +5,7 @@ from typing import Union
 import PIL.Image
 from fastapi import APIRouter, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
-from service import get_category, get_item_name, ocir, query_top_k_items, tgir
+from .service import get_category, get_item_name, ocir, query_top_k_items, tgir
 
 router = APIRouter()
 
