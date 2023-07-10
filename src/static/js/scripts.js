@@ -191,8 +191,8 @@ function setup_textbox(){
 
 ///////////////////////////////////////////////////////////////////////////////
 // Flow change
-let person_image = document.querySelector("#person-frame").querySelector(".image-frame");
-let garment_image = document.querySelector("#garment-frame").querySelector(".image-frame");
+const person_image = document.querySelector("#person-frame").querySelector(".image-frame");
+const garment_image = document.querySelector("#garment-frame").querySelector(".image-frame");
 const control_buttons = document.querySelector("#control-button");
 function set_frame(frame, imageSrc){
 	frame.innerHTML = '';
@@ -244,7 +244,7 @@ control_buttons.addEventListener("click", () => {
 		person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 		garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
 		tryOn(thumbnailElement, person_url, garment_url);
-		runRecommendation(garment_url);
+		runRecommendation(garment_url, "");
 
 		setup_upload_container(3);
 		current_step = 3;
@@ -289,7 +289,9 @@ function show_before_after_result(before_data, after_data) {
 
 	const upload_container = document.getElementById("upload-zone");
 	const thumbnailElement = upload_container.querySelector("thumb");
-	thumbnailElement.remove()
+	if (thumbnailElement) {
+		thumbnailElement.remove()
+	}
 	upload_container.disabled = true;
 
 	show(document.getElementById("result-before-container"));
@@ -309,10 +311,10 @@ function show(element) {
 /////////////////////////////////////
 // Recommendation
 
-function runRecommendation(garment_url) {
+function runRecommendation(garment_url, caption) {
     const body = new FormData();
     body.append("ref_image", garment_url);
-    body.append("caption", "");
+    body.append("caption", caption);
 
 	fetch('/retrieval', {
 		method: 'POST',
@@ -323,7 +325,10 @@ function runRecommendation(garment_url) {
 	}).then(async (response) => {
         const data = await response.json();
 		const results = parseResults(data);
-		showResults(results)
+		showResults(results);
+		document.querySelector("#sample-container").style.display = "none";
+		document.querySelector("#caption-form").style.display = "block";
+		document.querySelector("#caption-button").style.display = "block";
 	})
 }
 
@@ -347,11 +352,11 @@ function parseResults(data) {
 
 function showResults(results) {
 	document.getElementById("retrieval-container").style.display = "block";
-	showResult("intra-results", results.intra);	
-	showResult("inter-results", results.inter);	
+	showResult("intra-results", results.intra, true);	
+	showResult("inter-results", results.inter, false);	
 }
 
-function showResult(containerId, results) {
+function showResult(containerId, results, canTryOn) {
 	const container = document.getElementById(containerId);
 	container.innerHTML = '';
 
@@ -375,6 +380,22 @@ function showResult(containerId, results) {
 
 			wrapper.appendChild(image);
 			container.appendChild(wrapper);
+
+			if (canTryOn) {
+				wrapper.addEventListener("click", () => {
+					const backgroundImage = `url('${image.src}')`;
+					set_frame(garment_image, backgroundImage);
+					let person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
+					let garment_url = dataURLtoFile(image.src)
+					tryOn(null, person_url, garment_url);
+				})
+			}
 		})
 	}
 }
+
+
+document.querySelector("#caption-button").addEventListener("click", () => {
+	const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
+	runRecommendation(garment_url, document.querySelector("#caption-textarea").value);
+});
