@@ -18,6 +18,7 @@ if str(ROOT) not in sys.path:
 
 from model.clip4cir import CLIP4CirModule
 from model.outfits_transformer import OutfitsTransformerModule
+from search.search_engine import SearchEngine
 
 
 def preload(device):
@@ -49,13 +50,6 @@ def preload(device):
     with open(data_dir / "polyvore_index_names.pkl", "rb") as f:
         content["index_names"] = np.array(pickle.load(f))
 
-    # Load item embeddings
-    content["index_embeddings"] = torch.nn.functional.normalize(
-        torch.load(data_dir / "polyvore_index_embeddings.pt", map_location=device).type(
-            torch.float32
-        )
-    )
-
     # Load item metadatas
     content["index_metadatas"] = {}
     with open(data_dir / "polyvore_item_metadata.json") as f:
@@ -81,13 +75,34 @@ def preload(device):
         "sunglasses",
     ]
 
+    # Load item embeddings and save to approximate searching
+    content["search_engine"] = {}
+    features = torch.nn.functional.normalize(
+        torch.load(data_dir / "polyvore_index_embeddings.pt", map_location=device).type(torch.float32)
+    ).cpu().detach().numpy()
+    index_types = ["all", *content["categories"]]
+    for type in index_types:
+        if not SearchEngine.can_load(pretrained_dir, type):
+            if type != "all":
+                category_indices = np.array([i for i in content["index_metadatas"] if content["index_metadatas"][i]["category"] == type])
+            else:
+                category_indices = np.arange(len(features))
+            category_features = features[category_indices]
+
+            index = SearchEngine(category_indices, category_features)
+            SearchEngine.save(index, pretrained_dir, type)
+     
+        content["search_engine"][type] = SearchEngine.load(pretrained_dir, type)
+
     return content
 
 
+@torch.no_grad()
 def tgir(image: PIL.Image.Image, caption: str, api_content: dict):
     return api_content["models"]["clip4cir"](image, caption)
 
 
+@torch.no_grad()
 def ocir(image: PIL.Image.Image, category: str, api_content: dict):
     embedding = api_content["models"]["clip4cir"].encode_image(image)
 
@@ -103,21 +118,12 @@ def ocir(image: PIL.Image.Image, category: str, api_content: dict):
 
 
 def query_top_k_items(embedding, category, top_k, api_content: dict):
-    device = api_content["index_embeddings"].device
-    metadatas = api_content["index_metadatas"]
-
-    if category in api_content["categories"]:
-        indices = np.array([i for i in metadatas if metadatas[i]["category"] == category])
-    else:
-        indices = np.arange(len(api_content["index_embeddings"]))
-
-    index_embeddings = api_content["index_embeddings"][indices]
-
-    embedding = embedding.unsqueeze(0).to(device)
-    cos_similarity = embedding @ index_embeddings.transpose(0, 1)
-    sorted_indices = torch.topk(cos_similarity, top_k, dim=1, largest=True).indices
-
-    return indices[sorted_indices.flatten().cpu().numpy()]
+    if category == None:
+        category = "all"
+    
+    search_engine = api_content["search_engine"][category]
+    results = search_engine.run(embedding, top_k)
+    return results
 
 
 def get_category(item_index, api_content: dict):
