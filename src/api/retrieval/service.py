@@ -46,6 +46,14 @@ def preload(device):
         pretrained_dir / "outfits_transformer.pt", device
     )
 
+    # Download metadata
+    if not data_dir.exists():
+        out = str(ROOT / "dataset.zip")
+        gdown.download("https://drive.google.com/uc?id=1gFy4bmscwXCt65duIfd7b1wkdkmTJelh", out)
+        with zipfile.ZipFile(out, 'r') as zip_ref:
+            zip_ref.extractall(str(ROOT))
+        os.remove(out)   
+
     # Load item names
     with open(data_dir / "polyvore_index_names.pkl", "rb") as f:
         content["index_names"] = np.array(pickle.load(f))
