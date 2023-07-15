@@ -75,7 +75,7 @@
             </div>
             <form id="caption-form" class="mt-5" style="display: none;">
               <div class="form-group">
-                <label for="caption-textarea">Insert your feedback caption here</label>
+                <label for="caption-textarea">If you want to find other garments that have some relative attributes to the selected garment, insert those attributes here:</label>
                 <textarea class="form-control" id="caption-textarea" rows="3"></textarea>
               </div>
             </form>
@@ -89,9 +89,14 @@
         </div>
 
         <div id="retrieval-container" class="d-flex flex-row mt-5" style="width: 100%; display: none !important;">
-          <div class="d-flex flex-column justify-content-start align-items-center ps-5 pt-3" style="width: 20%">
-            <span>You may like</span>
-            <span>(Click to try on)</span>
+          <div class="d-flex flex-column" style="width: 20%">
+            <div class="d-flex flex-column pt-5" style="height: 50%">
+              <span class="align-self-center">Similar items</span>
+              <span class="align-self-center">(Click to try on)</span>
+            </div>
+            <div class="d-flex flex-column pt-5" style="height: 50%">
+              <span class="align-self-center">Complementary items</span>
+            </div>
           </div>
           <div class="d-flex flex-column" style="width: 80%;">
             <div id="intra-results" class="d-flex mt-2" style="width: 80%;"></div>
