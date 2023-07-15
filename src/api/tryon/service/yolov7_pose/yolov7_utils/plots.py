@@ -8,19 +8,19 @@ from copy import copy
 from pathlib import Path
 
 import cv2
-import matplotlib
-import matplotlib.pyplot as plt
+# import matplotlib
+# import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import yaml
+# import yaml
 from PIL import Image, ImageDraw, ImageFont
-from scipy.signal import butter, filtfilt
+# from scipy.signal import butter, filtfilt
 from yolov7_utils.general import xywh2xyxy, xyxy2xywh
 from yolov7_utils.metrics import fitness
 
 # Settings
-matplotlib.rc('font', **{'size': 11})
-matplotlib.use('Agg')  # for writing to files only
+# matplotlib.rc('font', **{'size': 11})
+# matplotlib.use('Agg')  # for writing to files only
 
 
 def color_list():

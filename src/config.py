@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent.parent

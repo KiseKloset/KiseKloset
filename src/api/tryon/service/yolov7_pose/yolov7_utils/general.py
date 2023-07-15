@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 import torch
 import torchvision
-import yaml
+# import yaml
 from yolov7_utils.google_utils import gsutil_getsize
 from yolov7_utils.metrics import fitness
 from yolov7_utils.torch_utils import init_torch_seeds

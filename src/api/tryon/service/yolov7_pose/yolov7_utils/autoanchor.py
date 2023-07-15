@@ -2,8 +2,8 @@
 
 import numpy as np
 import torch
-import yaml
-from scipy.cluster.vq import kmeans
+# import yaml
+# from scipy.cluster.vq import kmeans
 from tqdm import tqdm
 from yolov7_utils.general import colorstr
 
