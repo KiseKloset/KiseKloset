@@ -1,26 +1,37 @@
 let current_step = 1;
 
+let data_url_pool = {};
+
 function convertImagePathToDataURL(imageElement, imagePath) {
-  var image = new Image();
-  image.src = imagePath;
+	if (data_url_pool[imagePath]) {
+		imageElement.src = data_url_pool[imagePath];
+		return;
+	}
 
-  var canvas = document.createElement("canvas");
-  var context = canvas.getContext("2d");
+	const path = imagePath;
+	var image = new Image();
+	image.src = imagePath;
 
-  image.onload = function() {
-    canvas.width = image.width;
-    canvas.height = image.height;
+	var canvas = document.createElement("canvas");
+	var context = canvas.getContext("2d");
 
-    context.drawImage(image, 0, 0);
+	image.onload = function() {
+		canvas.width = image.width;
+		canvas.height = image.height;
 
-    var dataURL = canvas.toDataURL("image/jpeg"); // Change "image/jpeg" to the desired image format if needed
+		context.drawImage(image, 0, 0);
 
-    // Assign the data URL to the image_url variable or use it as desired
-    var image_url = dataURL;
+		var dataURL = canvas.toDataURL("image/jpeg"); // Change "image/jpeg" to the desired image format if needed
 
-    // Use the image_url variable here or return it if needed
-    imageElement.src = image_url;
-  };
+		// Assign the data URL to the image_url variable or use it as desired
+		var image_url = dataURL;
+
+		// Use the image_url variable here or return it if needed
+		imageElement.src = image_url;
+
+		// Caching
+		data_url_pool[path] = image_url;
+	};
 }
 
 
@@ -320,7 +331,11 @@ function show(element) {
 /////////////////////////////////////
 // Recommendation
 
+let compCache = {};
+
 function runRecommendation(garment_url, caption) {
+	compCache = {};
+	data_url_pool = {};
     const body = new FormData();
     body.append("ref_image", garment_url);
     body.append("caption", caption);
@@ -333,6 +348,7 @@ function runRecommendation(garment_url, caption) {
         body: body
 	}).then(async (response) => {
         const data = await response.json();
+		compCache[0] = data;
 		const results = parseResults(data);
 		showResults(results);
 		document.querySelector("#sample-container").style.display = "none";
@@ -341,12 +357,35 @@ function runRecommendation(garment_url, caption) {
 	})
 }
 
+function runCompRecommendation(index, garment_url) {
+	if (compCache[index] == undefined) {
+		const body = new FormData();
+		body.append("ref_image", garment_url);
+		body.append("caption", "");
+	
+		fetch('/retrieval', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+			},
+			body: body
+		}).then(async (response) => {
+			const data = await response.json();
+			compCache[index] = data;
+			const results = parseResults(data);
+			showCompResult("inter-results", results.inter);	
+		})
+	} else {
+		const results = parseResults(compCache[index]);
+		showCompResult("inter-results", results.inter);	
+	}
+}
+
 function parseResults(data) {
 	const results = {
 		"intra": [], 
 		"inter": [] 
 	}
-	console.log(data);
 	for (let i in data) {
 		if (i.startsWith("Target ")) {
 			for (let item in data[i]) {
@@ -361,48 +400,96 @@ function parseResults(data) {
 
 function showResults(results) {
 	document.getElementById("retrieval-container").style.display = "block";
-	showResult("intra-results", results.intra, true);	
-	showResult("inter-results", results.inter, false);	
+	showSimilarResult("intra-results", results.intra);	
+	showCompResult("inter-results", results.inter);	
 }
 
-function showResult(containerId, results, canTryOn) {
+function showSimilarResult(containerId, results) {
+	const container = document.getElementById(containerId);
+	container.innerHTML = '';
+
+	if (results){
+		results.unshift("original");
+		results.pop();
+		
+		let i = -1;
+		results.forEach(sample => {
+			i += 1;
+			const wrapper = createItemRecommendationWrapper();
+			const image = createItemRecommendationImage(); 
+
+			if (sample === "original") {
+				image.src = URLtoData(garment_image.style.backgroundImage);
+			} else {
+				convertImagePathToDataURL(image, sample);
+			}
+
+			wrapper.appendChild(image);
+			wrapper.id = "comp-" + i;
+			container.appendChild(wrapper);
+
+			wrapper.addEventListener("click", (e) => {
+				const id = parseInt(e.target.parentNode.id.substring(5));
+				const backgroundImage = `url('${image.src}')`;
+				set_frame(garment_image, backgroundImage);
+				let person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
+				let garment_url = dataURLtoFile(image.src)
+				tryOn(null, person_url, garment_url);
+				runCompRecommendation(id, garment_url);
+				hightlight(document.getElementById("intra-results"), id);
+			})
+		});
+		
+		hightlight(container, 0);
+	}
+}
+
+function showCompResult(containerId, results) {
 	const container = document.getElementById(containerId);
 	container.innerHTML = '';
 
 	if (results){
 		results.forEach(sample => {
-			const wrapper = document.createElement("div");
-			wrapper.classList.add("hover-zoom");
-			wrapper.classList.add("bg-image");
-			wrapper.classList.add("ps-0");
-			wrapper.classList.add("pe-0");
-			wrapper.style.width = "10%";
-			wrapper.style.position = "relative";
-
-			const image = document.createElement("img");
-			image.classList.add("img-fluid");
-			image.classList.add("image");
-			image.style.aspectRatio = "3 / 4";
-			image.style.cursor = "pointer";
-			image.style.objectFit = "cover";
+			const wrapper = createItemRecommendationWrapper();
+			const image = createItemRecommendationImage(); 
 			convertImagePathToDataURL(image, sample);
-
 			wrapper.appendChild(image);
 			container.appendChild(wrapper);
-
-			if (canTryOn) {
-				wrapper.addEventListener("click", () => {
-					const backgroundImage = `url('${image.src}')`;
-					set_frame(garment_image, backgroundImage);
-					let person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
-					let garment_url = dataURLtoFile(image.src)
-					tryOn(null, person_url, garment_url);
-				})
-			}
-		})
+		});		
 	}
 }
 
+function createItemRecommendationWrapper() {
+	const wrapper = document.createElement("div");
+	wrapper.classList.add("hover-zoom");
+	wrapper.classList.add("bg-image");
+	wrapper.classList.add("ps-0");
+	wrapper.classList.add("pe-0");
+	wrapper.style.width = "10%";
+	wrapper.style.position = "relative";
+	return wrapper;
+}
+
+function createItemRecommendationImage() {
+	const image = document.createElement("img");
+	image.classList.add("img-fluid");
+	image.classList.add("image");
+	image.style.aspectRatio = "3 / 4";
+	image.style.cursor = "pointer";
+	image.style.objectFit = "cover";
+	return image;
+}
+
+function hightlight(container, childIndex) {
+	for (let i = 0; i < container.children.length; i++) {
+		container.children[i].style.setProperty('box-shadow', '');
+		container.children[i].style.marginLeft = "0px"; 
+		container.children[i].style.marginRight = "0px"; 
+	}
+	container.children[childIndex].style.setProperty('box-shadow', '0px 0px 2px 0px rgba(0,255,255,0.7), 0px 0px 4px 0px rgba(0,255,255,0.7), 0px 0px 8px 0px rgba(0,255,255,0.7), 0px 0px 16px 0px rgba(0,255,255,0.7)', 'important');
+	container.children[childIndex].style.marginLeft = "4px"; 
+	container.children[childIndex].style.marginRight = "4px";
+}
 
 document.querySelector("#caption-button").addEventListener("click", () => {
 	const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));

@@ -47,9 +47,10 @@ async def image_retrieval(
 
     # Add TGIR results to response
     response["Target " + target_category] = []
-    target_image_indices = query_top_k_items(target_embedding, target_category, len(request.app.state.retrieval_content["categories"]), api_content)
+    target_image_indices = query_top_k_items(target_embedding, target_category, len(request.app.state.retrieval_content["categories"]) - 1, api_content)
 
     for index in target_image_indices:
+        assert get_category(index, api_content) == target_category
         item_name = get_item_name(index, api_content)
         item_url = item_name_to_url(item_name, request.app)
         response["Target " + target_category].append({"id": item_name, "url": item_url})
@@ -75,6 +76,7 @@ async def image_retrieval(
         response["Comp " + category] = []
         image_indices = query_top_k_items(embedding, category, 5, api_content)
         for index in image_indices:
+            assert get_category(index, api_content) == category
             item_name = get_item_name(index, api_content)
             item_url = item_name_to_url(item_name, request.app)
             response["Comp " + category].append({"id": item_name, "url": item_url})
