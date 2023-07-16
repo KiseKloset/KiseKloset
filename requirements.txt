@@ -15,5 +15,9 @@ matplotlib
 pyyaml
 git+https://github.com/openai/CLIP.git
 
+# Real-ESRGan
+basicsr==1.4.2
+gfpgan==1.3.5
+
 # Download
 gdown==4.7.1
