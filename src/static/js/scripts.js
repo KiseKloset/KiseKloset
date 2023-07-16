@@ -263,9 +263,8 @@ control_buttons.addEventListener("click", () => {
 
 		person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 		garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
-		tryOn(thumbnailElement, person_url, garment_url);
+		tryOn(person_url, garment_url);
 		runRecommendation(garment_url, "");
-
 		setup_upload_container(3);
 		current_step = 3;
 
@@ -274,7 +273,7 @@ control_buttons.addEventListener("click", () => {
 });
 
 
-function tryOn(display_frame, person_url, garment_url) {
+function tryOn(person_url, garment_url) {
     const body = new FormData();
     body.append("person_image", person_url);
     body.append("garment_image", garment_url);
@@ -291,6 +290,7 @@ function tryOn(display_frame, person_url, garment_url) {
 			const old_data = URLtoData(person_image.style.backgroundImage);
 			const new_data = data["result"];
 			show_before_after_result(old_data, new_data);
+			showUpscale(old_data, new_data);
         }
         else {
             window.alert("Something wrong. Please check your input and try again next time");
@@ -298,6 +298,32 @@ function tryOn(display_frame, person_url, garment_url) {
     })
 }
 
+///////////////////////////////////
+// Upscale
+function upscale(frame_element){
+	const body = new FormData();
+    body.append("image", dataURLtoFile(frame_element.src));
+	fetch('/upscale/image', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+        },
+        body: body
+    }).then(async (response) => {
+        let data = await response.json();
+        if (data["message"] == "success") {
+			frame_element.src = data["result"];
+        }
+        else {
+            window.alert("Something wrong. Please check your input and try again next time");
+        }
+    })
+}
+
+function showUpscale(before_data, after_data){
+	upscale(document.getElementById("result-before"));
+	upscale(document.getElementById("result-after"));
+}
 ///////////////////////////////////
 // After-before effect
 
@@ -434,7 +460,7 @@ function showSimilarResult(containerId, results) {
 				set_frame(garment_image, backgroundImage);
 				let person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 				let garment_url = dataURLtoFile(image.src)
-				tryOn(null, person_url, garment_url);
+				tryOn(person_url, garment_url);
 				runCompRecommendation(id, garment_url);
 				hightlight(document.getElementById("intra-results"), id);
 			})

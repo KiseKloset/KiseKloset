@@ -9,8 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from api.tryon.router import router as tryon_router
 from config import settings
+from api.tryon.router import router as tryon_router
+from api.upscale.router import router as upscale_router 
 
 from api.retrieval import service
 from api.retrieval.router import router as retrieval_router
@@ -75,6 +76,7 @@ async def home():
 
 app.include_router(tryon_router, prefix="/try-on")
 app.include_router(retrieval_router, prefix="/retrieval")
+app.include_router(upscale_router, prefix="/upscale")
 
 
 if __name__ == '__main__':
