@@ -35,7 +35,10 @@ async def image_retrieval(
     start = end
 
     target_image_index = query_top_k_items(target_embedding, None, 1, api_content)[0]
-    target_category = get_category(target_image_index, api_content)
+    if len(caption) == 0:
+        target_category = "tops" # "default"
+    else:
+        target_category = get_category(target_image_index, api_content)
 
     end = time.time()
     print("TGIR query:", end - start)
@@ -47,7 +50,9 @@ async def image_retrieval(
 
     # Add TGIR results to response
     response["Target " + target_category] = []
-    target_image_indices = query_top_k_items(target_embedding, target_category, len(request.app.state.retrieval_content["categories"]) - 1, api_content)
+    n_items = len(request.app.state.retrieval_content["categories"]) - 1
+    assert n_items == 10
+    target_image_indices = query_top_k_items(target_embedding, target_category, n_items, api_content)
 
     for index in target_image_indices:
         assert get_category(index, api_content) == target_category
