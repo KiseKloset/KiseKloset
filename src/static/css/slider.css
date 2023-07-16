@@ -89,8 +89,8 @@
     user-select: none;
 }
 .bal-handle {
-    height: 41px;
-    width: 41px;
+    height: 40px;
+    width: 40px;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -133,7 +133,7 @@
 }
 .bal-handle::before,
 .bal-handle::after {
-    content: " ";
+    content: "";
     display: block;
     width: 2px;
     background: #fff;

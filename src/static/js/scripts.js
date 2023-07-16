@@ -76,15 +76,20 @@ function handleImageClick(image_url) {
 
 
 function get_sample(type){
-	let samples = []
+	let samples = [];
+	let samplesPath = "static/samples/" + type + "/";
 	if (type=="model"){
-		for (let i = 0; i < 18; ++i) {
-			samples.push("static/samples/model/person.jpg");
+		let files = ["001283_0.jpg", "001387_0.jpg", "006155_0.jpg", "006789_0.jpg", "008959_0.jpg", 
+			"014612_0.jpg", "015516_0.jpg", "018047_0.jpg", "019243_0.jpg", "019360_0.jpg"];
+		for (let i = 0; i < files.length; ++i) {
+			samples.push(samplesPath + files[i]);
 		}
 	}
 	else if (type=="garment"){
-		for (let i = 0; i < 18; ++i) {
-			samples.push("static/samples/garment/garment.jpg");
+		let files = ["000619_1.jpg", "001448_1.jpg", "003749_1.jpg", "004646_1.jpg", "008771_1.jpg", 
+			"009758_1.jpg", "009932_1.jpg", "013319_1.jpg", "016653_1.jpg", "018047_1.jpg"];
+		for (let i = 0; i < files.length; ++i) {
+			samples.push(samplesPath + files[i]);
 		}
 	}
 
@@ -197,6 +202,10 @@ const control_buttons = document.querySelector("#control-button");
 function set_frame(frame, imageSrc){
 	frame.innerHTML = '';
 	frame.style.backgroundImage = imageSrc;
+	frame.style.backgroundRepeat = "no-repeat"
+	frame.style.backgroundSize = "contain";
+	frame.style.backgroundPosition = "center";
+	frame.style.backgroundColor = "white"
 }
 
 function dataURLtoFile(datauURL, filename) {

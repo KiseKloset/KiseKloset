@@ -54,6 +54,8 @@
 	justify-content: center;
 	text-align: center;
 	background-color: rgba(75, 85, 99);
-	background-size: contain;
+	background-repeat: no-repeat;
+    background-size: contain;
+	background-position: center;
 	border-radius: 7px;
   }
