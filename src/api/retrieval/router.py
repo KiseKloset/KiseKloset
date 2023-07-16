@@ -47,7 +47,7 @@ async def image_retrieval(
 
     # Add TGIR results to response
     response["Target " + target_category] = []
-    target_image_indices = query_top_k_items(target_embedding, target_category, 5, api_content)
+    target_image_indices = query_top_k_items(target_embedding, target_category, len(request.app.state.retrieval_content["categories"]), api_content)
 
     for index in target_image_indices:
         item_name = get_item_name(index, api_content)

@@ -46,7 +46,8 @@ app.add_middleware(
 @app.on_event('startup')
 async def startup_event():
     app.state.static_files = { "directory": str(ROOT / "static"), "prefix": "/static" }
-    app.state.retrieval_content = service.preload("cpu")
+    app.state.retrieval_content = service.preload("cuda:0")
+    print("Finish startup")
 
 
 @app.exception_handler(RequestValidationError)
