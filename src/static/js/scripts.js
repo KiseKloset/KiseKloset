@@ -418,10 +418,11 @@ function parseResults(data) {
 			for (let item in data[i]) {
 				results.intra.push(data[i][item]["url"]);
 			}
-		} else {
+		} else if (i !== "Comp all-body") {
 			results.inter.push(data[i][0]["url"]);
 		}
 	}
+	results.intra.pop();
 	return results;
 }
 
@@ -443,7 +444,7 @@ function showSimilarResult(containerId, results) {
 		results.forEach(sample => {
 			i += 1;
 			const wrapper = createItemRecommendationWrapper();
-			const image = createItemRecommendationImage(); 
+			const image = createItemRecommendationImage(true); 
 
 			if (sample === "original") {
 				image.src = URLtoData(garment_image.style.backgroundImage);
@@ -478,7 +479,7 @@ function showCompResult(containerId, results) {
 	if (results){
 		results.forEach(sample => {
 			const wrapper = createItemRecommendationWrapper();
-			const image = createItemRecommendationImage(); 
+			const image = createItemRecommendationImage(false); 
 			convertImagePathToDataURL(image, sample);
 			wrapper.appendChild(image);
 			container.appendChild(wrapper);
@@ -497,12 +498,14 @@ function createItemRecommendationWrapper() {
 	return wrapper;
 }
 
-function createItemRecommendationImage() {
+function createItemRecommendationImage(showCursor) {
 	const image = document.createElement("img");
 	image.classList.add("img-fluid");
 	image.classList.add("image");
 	image.style.aspectRatio = "3 / 4";
-	image.style.cursor = "pointer";
+	if (showCursor) {
+		image.style.cursor = "pointer";
+	}
 	image.style.objectFit = "cover";
 	return image;
 }
