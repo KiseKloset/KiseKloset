@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>My Web</title>
+    <title>KiseKloset</title>
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
@@ -22,12 +22,34 @@
   </head>
   <body>
     <!-- Start your project here-->
-    <div id="header-container" class="d-flex flex-column vw-100 vh-100" style="overflow-x: hidden; background-color: #232428;">
-      <header class="card-header">
-        <h3 class="text-white mt-2 mb-2" style="margin-left: 0.5%;"> Smart Fashion Assistant </h3>
+    <div class="d-flex flex-column vw-100 vh-100" style="overflow-x: hidden; background-color: #232428;">
+      <header id="header-container" class="d-flex flex-wrap justify-content-center px-5 py-3 border-bottom">
+        <h3 class="text-white d-flex align-items-center mb-3 me-md-auto"> 
+          KiseKloset
+        </h3>
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdzbqUM_ICvSbWRCgOAD_DPxRaMpOu2efrSLrFC_nhIR2Q56g/viewform?usp=sf_link" class="nav-link active ps-4 pe-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-lg" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14Z"></path>
+              </svg>
+              Help
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdzbqUM_ICvSbWRCgOAD_DPxRaMpOu2efrSLrFC_nhIR2Q56g/viewform?usp=sf_link" class="nav-link active ps-4 pe-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+                <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"></path>
+                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"></path>
+                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"></path>
+              </svg>
+              Survey
+            </a>
+          </li>
+        </ul>
       </header>
 
-      <div id="body-container" class="d-flex flex-column vh-100 mt-2"  style="margin-left: 10%; margin-right: 10%;">
+      <div id="body-container" class="d-flex flex-column vh-100 mt-5"  style="margin-left: 10%; margin-right: 10%;">
         <div id="tryon-container" class="d-flex flex-row" style="width: 100%; height: 70%;">
 
           <div id="left-container" class="d-flex flex-column align-items-center mt-5" style="width: 20%">
@@ -67,6 +89,13 @@
             <a id="control-button" class="btn btn-primary text-white shadow-none" style="width: 100px;" href="#!" role="button">
               <i class="fas fa-caret-right fa-lg me-2"></i>
               Next
+            </a>
+            <a id="reset-button" href="/" class="btn btn-primary text-white shadow-none align-self-center ms-2 me-2" role="button" style="display: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat me-1" viewBox="0 0 16 16">
+                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+              </svg>
+              Restart
             </a>
           </div>
 

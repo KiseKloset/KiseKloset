@@ -380,6 +380,7 @@ function runRecommendation(garment_url, caption) {
 		document.querySelector("#sample-container").style.display = "none";
 		document.querySelector("#caption-form").style.display = "block";
 		document.querySelector("#caption-button").style.display = "block";
+		document.querySelector("#reset-button").style.display = "block";
 	})
 }
 
