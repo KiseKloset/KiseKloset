@@ -54,6 +54,8 @@ function setup_samples(samples) {
 			image.style.aspectRatio = "3 / 4";
 			image.style.borderRadius = "7px";
 			image.style.cursor = "pointer";
+			image.style.width= "100%";
+			image.style.objectFit = "cover";
 			convertImagePathToDataURL(image, sample);
 
 			image.addEventListener("click", () => {
@@ -90,15 +92,15 @@ function get_sample(type){
 	let samples = [];
 	let samplesPath = "static/samples/" + type + "/";
 	if (type=="model"){
-		let files = ["001283_0.jpg", "001387_0.jpg", "006155_0.jpg", "006789_0.jpg", "008959_0.jpg", 
-			"014612_0.jpg", "015516_0.jpg", "018047_0.jpg", "019243_0.jpg", "019360_0.jpg"];
+		let files = ["000020_0.jpg", "000228_0.jpg", "000619_0.jpg", "001387_0.jpg", "002371_0.jpg", 
+				"002523_0.jpg", "004423_0.jpg", "010057_0.jpg", "014612_0.jpg", "019243_0.jpg"];
 		for (let i = 0; i < files.length; ++i) {
 			samples.push(samplesPath + files[i]);
 		}
 	}
 	else if (type=="garment"){
-		let files = ["000619_1.jpg", "001448_1.jpg", "003749_1.jpg", "004646_1.jpg", "008771_1.jpg", 
-			"009758_1.jpg", "009932_1.jpg", "013319_1.jpg", "016653_1.jpg", "018047_1.jpg"];
+		let files = ["000339_1.jpg", "001448_1.jpg", "003749_1.jpg", "005285_1.jpg", "005586_1.jpg",
+					"005683_1.jpg", "008771_1.jpg", "009758_1.jpg", "013319_1.jpg", "018047_1.jpg"];
 		for (let i = 0; i < files.length; ++i) {
 			samples.push(samplesPath + files[i]);
 		}
@@ -123,10 +125,10 @@ function setup_upload_container(step){
 	}
 	
 	if (step==1){
-		step_instruction.innerHTML = "Step 1: Upload your model OR select from list, then click \"Next\"";
+		step_instruction.innerHTML = "Upload your model OR select from list, then click \"Next\"";
 	}
 	else if (step==2){
-		step_instruction.innerHTML = "Step 2: Upload your garment OR select from list, then click \"Next\"";
+		step_instruction.innerHTML = "Upload your garment OR select from list, then click \"Next\"";
 	}
 	else if (step==3){
 		step_instruction.innerHTML = "Try-on result";
@@ -255,7 +257,7 @@ control_buttons.addEventListener("click", () => {
 	else if (current_step == 2) {
 		set_frame(garment_image, thumbnailElement.style.backgroundImage);
 		document.getElementById("sample-container").innerHTML = '';
-		setup_samples(null);
+		thumbnailElement.remove();
 		uinstruction = document.querySelector("#upload-instruction")
 		if (uinstruction){
 			uinstruction.remove();
@@ -274,6 +276,7 @@ control_buttons.addEventListener("click", () => {
 
 
 function tryOn(person_url, garment_url) {
+	document.getElementById("try-on-loader").style.display = "block";
     const body = new FormData();
     body.append("person_image", person_url);
     body.append("garment_image", garment_url);
@@ -295,6 +298,7 @@ function tryOn(person_url, garment_url) {
         else {
             window.alert("Something wrong. Please check your input and try again next time");
         }
+		document.getElementById("try-on-loader").style.display = "none";
     })
 }
 
@@ -360,6 +364,7 @@ function show(element) {
 let compCache = {};
 
 function runRecommendation(garment_url, caption) {
+	document.getElementById("retrieval-loader").style.display = "block";
 	compCache = {};
 	data_url_pool = {};
     const body = new FormData();
@@ -381,10 +386,13 @@ function runRecommendation(garment_url, caption) {
 		document.querySelector("#caption-form").style.display = "block";
 		document.querySelector("#caption-button").style.display = "block";
 		document.querySelector("#reset-button").style.display = "block";
+
+		document.getElementById("retrieval-loader").style.display = "none";
 	})
 }
 
 function runCompRecommendation(index, garment_url) {
+	document.getElementById("retrieval-loader").style.display = "block";
 	if (compCache[index] == undefined) {
 		const body = new FormData();
 		body.append("ref_image", garment_url);
@@ -401,10 +409,13 @@ function runCompRecommendation(index, garment_url) {
 			compCache[index] = data;
 			const results = parseResults(data);
 			showCompResult("inter-results", results.inter);	
+
+			document.getElementById("retrieval-loader").style.display = "none";
 		})
 	} else {
 		const results = parseResults(compCache[index]);
 		showCompResult("inter-results", results.inter);	
+		document.getElementById("retrieval-loader").style.display = "none";
 	}
 }
 
@@ -507,6 +518,7 @@ function createItemRecommendationImage(showCursor) {
 		image.style.cursor = "pointer";
 	}
 	image.style.objectFit = "cover";
+	image.style.width= "100%";
 	return image;
 }
 
@@ -516,9 +528,7 @@ function hightlight(container, childIndex) {
 		container.children[i].style.marginLeft = "0px"; 
 		container.children[i].style.marginRight = "0px"; 
 	}
-	container.children[childIndex].style.setProperty('box-shadow', '0px 0px 2px 0px rgba(0,255,255,0.7), 0px 0px 4px 0px rgba(0,255,255,0.7), 0px 0px 8px 0px rgba(0,255,255,0.7), 0px 0px 16px 0px rgba(0,255,255,0.7)', 'important');
-	container.children[childIndex].style.marginLeft = "4px"; 
-	container.children[childIndex].style.marginRight = "4px";
+	container.children[childIndex].style.setProperty('box-shadow', '0px 0px 7px 0px rgba(0,255,255,0.7), 0px 0px 14px 0px rgba(0,255,255,0.7), 0px 0px 28px 0px rgba(0,255,255,0.7), 0px 0px 56px 0px rgba(0,255,255,0.7)', 'important');
 }
 
 document.querySelector("#caption-button").addEventListener("click", () => {
