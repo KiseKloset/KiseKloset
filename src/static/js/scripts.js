@@ -118,6 +118,7 @@ setup_upload_container(1);
 function setup_upload_container(step){
 	container = document.querySelector("#middle-container");
 	const step_instruction = container.querySelector("#step-instruction");
+	const step_instruction_note = container.querySelector("#step-instruction-note");
 	const upload_instructor = container.querySelector("#upload-instruction");
 	if (upload_instructor){
 		upload_instructor.style.display = "block";
@@ -126,9 +127,11 @@ function setup_upload_container(step){
 	
 	if (step==1){
 		step_instruction.innerHTML = "Upload your model OR select from list, then click \"Next\"";
+		step_instruction_note.innerHTML = "Simple or uniform background is preferred";
 	}
 	else if (step==2){
 		step_instruction.innerHTML = "Upload your garment OR select from list, then click \"Next\"";
+		step_instruction_note.innerHTML = "We only support virtual try-on top garments,<br/>others may produce bad results";
 	}
 	else if (step==3){
 		step_instruction.innerHTML = "Try-on result";
