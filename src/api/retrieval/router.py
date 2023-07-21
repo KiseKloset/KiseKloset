@@ -1,6 +1,7 @@
 import io
 import time
 from typing import Union
+import random
 
 import PIL.Image
 from fastapi import APIRouter, Form, Request, UploadFile
@@ -9,11 +10,25 @@ from .service import get_category, get_item_name, ocir, query_top_k_items, tgir
 
 router = APIRouter()
 
+TON_SUR_TON = 0
+MIX_AND_MATCH = 1
+
+
+def get_k_of_style(style):
+    try:
+        if int(style) == MIX_AND_MATCH:
+            return 1000
+        return 1
+    except Exception as e:
+        return 1
+        
 
 @router.post("/")
 async def image_retrieval(
-    ref_image: Union[UploadFile, None] = None, caption: str = Form(""), request: Request = None
+    ref_image: Union[UploadFile, None] = None, caption: str = Form(""), style: int = Form(TON_SUR_TON), request: Request = None
 ):
+    print("Request style", style, ", type", type(style))
+
     if ref_image is not None:
         ref_image_content = await ref_image.read()
         image = io.BytesIO(ref_image_content)
@@ -73,14 +88,18 @@ async def image_retrieval(
     print("OCIR:", end - start)
     start = end
 
+    style_k = get_k_of_style(style)
+    print("Style k", style_k)
+
     # Add OCIR results to response
     for category, embedding in comp_embeddings.items():
         if category == target_category:
             continue
 
         response["Comp " + category] = []
-        image_indices = query_top_k_items(embedding, category, 5, api_content)
-        for index in image_indices:
+        image_indices = query_top_k_items(embedding, category, style_k, api_content)
+        random.shuffle(image_indices)
+        for index in image_indices[:5]:
             assert get_category(index, api_content) == category
             item_name = get_item_name(index, api_content)
             item_url = item_name_to_url(item_name, request.app)

@@ -269,7 +269,7 @@ control_buttons.addEventListener("click", () => {
 		person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 		garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
 		tryOn(person_url, garment_url);
-		runRecommendation(garment_url, "");
+		runRecommendation(garment_url, "", TON_SUR_TON);
 		setup_upload_container(3);
 		current_step = 3;
 
@@ -366,14 +366,15 @@ function show(element) {
 
 let compCache = {};
 
-function runRecommendation(garment_url, caption) {
+function runRecommendation(garment_url, caption, style) {
 	document.getElementById("retrieval-loader").style.display = "block";
 	compCache = {};
 	data_url_pool = {};
     const body = new FormData();
     body.append("ref_image", garment_url);
     body.append("caption", caption);
-
+	body.append("style", style);
+	const styleHash = 0 * NUM_STYLE + style; 
 	fetch('/retrieval', {
 		method: 'POST',
         headers: {
@@ -382,7 +383,7 @@ function runRecommendation(garment_url, caption) {
         body: body
 	}).then(async (response) => {
         const data = await response.json();
-		compCache[0] = data;
+		compCache[styleHash] = data;
 		const results = parseResults(data);
 		showResults(results);
 		document.querySelector("#sample-container").style.display = "none";
@@ -399,12 +400,14 @@ function runRecommendation(garment_url, caption) {
 	})
 }
 
-function runCompRecommendation(index, garment_url) {
+function runCompRecommendation(index, garment_url, style) {
 	document.getElementById("retrieval-loader").style.display = "block";
-	if (compCache[index] == undefined) {
+	const styleHash = index * NUM_STYLE + style;
+	if (compCache[styleHash] == undefined) {
 		const body = new FormData();
 		body.append("ref_image", garment_url);
 		body.append("caption", "");
+		body.append("style", style);
 	
 		fetch('/retrieval', {
 			method: 'POST',
@@ -414,14 +417,14 @@ function runCompRecommendation(index, garment_url) {
 			body: body
 		}).then(async (response) => {
 			const data = await response.json();
-			compCache[index] = data;
+			compCache[styleHash] = data;
 			const results = parseResults(data);
 			showCompResult("inter-results", results.inter);	
 
 			document.getElementById("retrieval-loader").style.display = "none";
 		})
 	} else {
-		const results = parseResults(compCache[index]);
+		const results = parseResults(compCache[styleHash]);
 		showCompResult("inter-results", results.inter);	
 		document.getElementById("retrieval-loader").style.display = "none";
 	}
@@ -488,7 +491,7 @@ function showSimilarResult(containerId, results, shouldPop) {
 				let person_url = dataURLtoFile(URLtoData(person_image.style.backgroundImage));
 				let garment_url = dataURLtoFile(image.src)
 				tryOn(person_url, garment_url);
-				runCompRecommendation(id, garment_url);
+				runCompRecommendation(id, garment_url, getSelectedStyle());
 				hightlight(document.getElementById("intra-results"), id);
 				selected_garment_id = wrapper.dataset.id;
 			})
@@ -537,18 +540,21 @@ function createItemRecommendationImage(showCursor) {
 	return image;
 }
 
+let highlightIndex = 0;
+
 function hightlight(container, childIndex) {
 	for (let i = 0; i < container.children.length; i++) {
 		container.children[i].style.setProperty('box-shadow', '');
 		container.children[i].style.marginLeft = "0px"; 
 		container.children[i].style.marginRight = "0px"; 
 	}
+	highlightIndex = childIndex;
 	container.children[childIndex].style.setProperty('box-shadow', '0px 0px 7px 0px rgba(0,255,255,0.7), 0px 0px 14px 0px rgba(0,255,255,0.7), 0px 0px 28px 0px rgba(0,255,255,0.7), 0px 0px 56px 0px rgba(0,255,255,0.7)', 'important');
 }
 
 document.querySelector("#caption-button").addEventListener("click", () => {
 	const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
-	runRecommendation(garment_url, document.querySelector("#caption-textarea").value);
+	runRecommendation(garment_url, document.querySelector("#caption-textarea").value, getSelectedStyle());
 });
 
 // Run recommendation on enter in textarea
@@ -557,9 +563,40 @@ function submitOnEnter(event) {
     if (event.which === 13) {
         if (!event.repeat) {
 			const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
-			runRecommendation(garment_url, document.querySelector("#caption-textarea").value);
+			runRecommendation(garment_url, document.querySelector("#caption-textarea").value, getSelectedStyle());
         }
         event.preventDefault(); // Prevents the addition of a new line in the text field
     }
 }
 document.getElementById("caption-textarea").addEventListener("keydown", submitOnEnter);
+
+// Complementary checkbox
+const TON_SUR_TON = 0;
+const MIX_AND_MATCH = 1;
+const NUM_STYLE = 2;
+
+function getSelectedStyle() {
+	let e = document.querySelector("input[type='radio'][name=flexRadioDefault]:checked");
+	if (!e) {
+		return TON_SUR_TON;
+	}
+
+	let id = e.id;
+	if (id === "flexRadioDefault2") {
+		return MIX_AND_MATCH;
+	}
+	return TON_SUR_TON;
+}
+
+let prev = null;
+document.querySelectorAll("input[type='radio'][name=flexRadioDefault]").forEach((input) => {
+	input.addEventListener('change', function() {
+        if (this === prev) {
+            return;
+        }
+		prev = this;
+
+		const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
+		runCompRecommendation(highlightIndex, garment_url, getSelectedStyle());
+    });
+});
