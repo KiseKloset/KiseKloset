@@ -209,11 +209,6 @@ function updateThumbnail(dropZoneElement, file) {
 		thumbnailElement.style.backgroundImage = null;
 	}
 }
-///////////////////////////////////////////////////////////////////////////////
-function setup_textbox(){
-	const container = document.querySelector("")
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Flow change
@@ -396,6 +391,11 @@ function runRecommendation(garment_url, caption) {
 		document.querySelector("#reset-button").style.display = "block";
 
 		document.getElementById("retrieval-loader").style.display = "none";
+
+		const caption_area = document.querySelector("#caption-textarea");
+		if (!caption_area.value.length) {
+			caption_area.value = "Top garments with same color or texture";
+		}
 	})
 }
 
