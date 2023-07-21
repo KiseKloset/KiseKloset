@@ -111,9 +111,7 @@ def tgir(image: PIL.Image.Image, caption: str, api_content: dict):
 
 
 @torch.no_grad()
-def ocir(image: PIL.Image.Image, category: str, api_content: dict):
-    embedding = api_content["models"]["clip4cir"].encode_image(image)
-
+def ocir(embedding, category: str, api_content: dict):
     if category not in api_content["categories"]:
         return {i: [] for i in api_content["categories"]}
 

@@ -443,11 +443,10 @@ function parseResults(data) {
 					results.intra.push(url);
 				}
 			}
-		} else if (i !== "Comp all-body") {
+		} else {
 			results.inter.push(data[i][0]["url"]);
 		}
 	}
-	results.intra.pop();
 	return results;
 }
 
