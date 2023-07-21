@@ -550,3 +550,16 @@ document.querySelector("#caption-button").addEventListener("click", () => {
 	const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
 	runRecommendation(garment_url, document.querySelector("#caption-textarea").value);
 });
+
+// Run recommendation on enter in textarea
+
+function submitOnEnter(event) {
+    if (event.which === 13) {
+        if (!event.repeat) {
+			const garment_url = dataURLtoFile(URLtoData(garment_image.style.backgroundImage));
+			runRecommendation(garment_url, document.querySelector("#caption-textarea").value);
+        }
+        event.preventDefault(); // Prevents the addition of a new line in the text field
+    }
+}
+document.getElementById("caption-textarea").addEventListener("keydown", submitOnEnter);
