@@ -25,9 +25,9 @@
     <!-- Start your project here-->
     <div class="d-flex flex-column mx-auto py-2" style="max-width: 80vw; min-height: 100vh;">
       
-      <header id="header-container" class="d-flex flex-row align-items-center mt-3 pb-4 px-5 border-bottom" style="justify-content: space-between;">
+      <header id="header-container" class="d-flex flex-row align-items-center pt-3 pb-3 px-5 border-bottom" style="justify-content: space-between;">
       <!-- <header id="header-container" class="d-flex flex-column flex-warp w-full mt-3 border-b pb-7 sm:px-4 px-2 ">  -->
-        <img alt="logo" loading="lazy" height="40rem" decoding="async" class="flex" src="static/samples/logo.svg" style="color: transparent;">
+        <img alt="logo" loading="lazy" height="30rem" decoding="async" class="flex" src="static/samples/logo.svg" style="color: transparent;">
         <div class="d-flex align-items-center">
           <a class="text-white link-primary border-end" href="https://docs.google.com/document/d/1de6OwaNw03o7paFR05cSBX0LjORZ1FgKKCGogbbedXQ/edit?usp=sharing" style="padding-left: 2rem; padding-right: 2rem;">
             <div>Help</div>
@@ -44,13 +44,13 @@
           <div id="left-container" class="d-flex flex-column align-items-center justify-content-center" style="width: 20%; padding-top: 3%;">
             <div id="person-frame" class="mb-5">
               <p class="text-white" style="text-align: center; font-size: 1.25rem;"> Model </p>
-              <div class="image-frame" style="height: 17vh; width: auto;; max-width: 200px; aspect-ratio: 3 / 4;">
+              <div class="image-frame" style="height: 20vh; width: auto; max-width: 15rem; aspect-ratio: 3 / 4;">
                 <i class="fa-solid fa-user-tie fa-2xl" style="color: #5fcda4;"></i>
               </div>
             </div>
             <div id="garment-frame" class="mb-5">
               <p class="text-white" style="text-align: center; font-size: 1.25rem;"> Garment </p>
-              <div class="image-frame" style="height: 17vh; width: auto; max-width: 200px; aspect-ratio: 3 / 4;">
+              <div class="image-frame" style="height: 20vh; width: auto; max-width: 15rem; aspect-ratio: 3 / 4;">
                 <i class="fa-solid fa-shirt fa-2xl" style="color: #a0eaea;"></i>
               </div>
             </div>
@@ -59,32 +59,32 @@
           <div id="middle-container" class="d-flex flex-column align-items-center justify-content-center" style="width: 50%;" >
             <p id="step-instruction" style="text-align: center; color: #ffffff; font-size: 1.5rem">
             </p>
-            <p id="step-instruction-note" style="text-align: center; color: #bbbbbb; font-size: 1.25rem;">
+            <p id="step-instruction-note" style="text-align: center; color: #bbbbbb; font-size: 1rem;">
               We only support virtual try-on top garments,<br/>others may produce bad results.
             </p>    
-            <div id="upload-zone" class="bal-container upload-drop-zone mx-auto mt-3" style="height: 35vh; width: auto; min-width: 200px; max-width: 400px; aspect-ratio: 3 / 4;">
+            <div id="upload-zone" class="bal-container upload-drop-zone mx-auto mt-3" style="height: 55vh; width: auto; min-width: 10rem; max-width: 50rem; aspect-ratio: 3 / 4;">
               <div class="text-center" id="try-on-loader" style="display: none; z-index: 30;">
                 <i class="fa fa-spinner fa-spin fa-5x"></i>
              </div>
               <span id="upload-instruction"></span>
               <input id="upload-input" type="file" name="myFile" accept="image/png, image/jpeg">
               <div id="result-after-container" class="bal-after" style="display: none;">
-                <img id="result-after" class="mx-auto" style="height: 35vh; width: auto; min-width: 200px; max-width: 400px; aspect-ratio: 3 / 4;">
+                <img id="result-after" class="mx-auto" style="height: 55vh; width: auto; min-width: 5rem; max-width: 50rem; aspect-ratio: 3 / 4;">
               </div>
               <div id="result-before-container" class="bal-before" style="display: none;">
                 <div class="bal-before-inset"></div>
-                <img id="result-before" class="mx-auto" style="height: 35vh; width: auto; min-width: 200px; max-width: 400px; aspect-ratio: 3 / 4;">
+                <img id="result-before" class="mx-auto" style="height: 55vh; width: auto; min-width: 5rem; max-width: 50rem; aspect-ratio: 3 / 4;">
               </div>
               <div id="result-slider" class="bal-handle" style="display: none;">
                 <span class=" handle-left-arrow"></span>
                 <span class="handle-right-arrow"></span>
               </div>
             </div>
-            <a id="control-button" class="btn btn-primary text-white shadow-none mt-4" style="width: 150px; font-size: 0.75rem;" href="#!" role="button">
+            <a id="control-button" class="btn btn-primary text-white shadow-none mt-4" style="width: 7rem; font-size: 0.75rem;" href="#!" role="button">
               <i class="fas fa-caret-right fa-lg me-2"></i>
               Next
             </a>
-            <a id="reset-button" href="/" class="btn btn-primary text-white shadow-none align-self-center mt-4" role="button" style="display: none; font-size: 0.75rem;">
+            <a id="reset-button" href="/" class="btn btn-primary text-white shadow-none align-self-center mt-4" role="button" style="width: 8rem; display: none; font-size: 0.75rem;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-repeat me-1" viewBox="0 0 16 16">
                 <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
                 <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
@@ -94,7 +94,7 @@
           </div>
 
           <div id="right-container" class="d-flex flex-column align-items-center justify-content-center" style="width: 30%; padding-top: 3%; height: 60vh;" >
-            <div id="sample-container" class="row align-items-center" style="overflow-y: scroll; max-width: 15vw;">
+            <div id="sample-container" class="row align-items-center" style="overflow-y: scroll; max-width: 20rem;">
             </div>
             <form id="caption-form" style="display: none;">
               <div class="form-group">
@@ -104,8 +104,8 @@
                 <textarea class="form-control" id="caption-textarea" rows="2" style="font-size: 1.25rem"></textarea>
               </div>
             </form>
-            <a id="caption-button" class="btn btn-primary text-white shadow-none mt-3 align-self-center" style="width: 150px; display: none; font-size: 0.75rem;" href="#!" role="button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <a id="caption-button" class="btn btn-primary text-white shadow-none mt-3 align-self-center" style="width: 7rem; display: none; font-size: 0.75rem;" href="#!" role="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
               </svg>
               Search
@@ -113,7 +113,7 @@
           </div>
         </div>
 
-        <div id="retrieval-container" class="d-flex flex-column mt-5" style="display: none !important;">
+        <div id="retrieval-container" class="d-flex flex-column mt-3" style="display: none !important;">
           <div class="text-center" id="retrieval-loader" style="display: none;">
             <i class="fa fa-spinner fa-spin fa-2x"></i>
          </div>

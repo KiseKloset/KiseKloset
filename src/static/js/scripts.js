@@ -395,7 +395,7 @@ function runRecommendation(garment_url, caption, style) {
 
 		const caption_area = document.querySelector("#caption-textarea");
 		if (!caption_area.value.length) {
-			caption_area.value = "Top garments with same color or texture";
+			caption_area.value = "Top garments with the same color or texture";
 		}
 	})
 }
