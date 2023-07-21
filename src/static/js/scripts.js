@@ -34,6 +34,7 @@ function convertImagePathToDataURL(imageElement, imagePath) {
 	};
 }
 
+let selected_garment_id = "";
 
 function setup_samples(samples) {
     const container = document.getElementById("sample-container");
@@ -56,9 +57,13 @@ function setup_samples(samples) {
 			image.style.cursor = "pointer";
 			image.style.width= "100%";
 			image.style.objectFit = "cover";
+			image.dataset.id = sample.split('/').slice(-1);
 			convertImagePathToDataURL(image, sample);
 
 			image.addEventListener("click", () => {
+				if (current_step === 2) {
+					selected_garment_id = image.dataset.id;
+				}
 				handleImageClick(image.src); // Call your custom onClick function with the corresponding index
 			});
 
@@ -430,7 +435,10 @@ function parseResults(data) {
 	for (let i in data) {
 		if (i.startsWith("Target ")) {
 			for (let item in data[i]) {
-				results.intra.push(data[i][item]["url"]);
+				const url = data[i][item]["url"];
+				if (!url.includes(selected_garment_id)) {
+					results.intra.push(url);
+				}
 			}
 		} else if (i !== "Comp all-body") {
 			results.inter.push(data[i][0]["url"]);
@@ -442,17 +450,19 @@ function parseResults(data) {
 
 function showResults(results) {
 	document.getElementById("retrieval-container").style.display = "block";
-	showSimilarResult("intra-results", results.intra);	
+	showSimilarResult("intra-results", results.intra, results.intra.length >= results.inter.length);	
 	showCompResult("inter-results", results.inter);	
 }
 
-function showSimilarResult(containerId, results) {
+function showSimilarResult(containerId, results, shouldPop) {
 	const container = document.getElementById(containerId);
 	container.innerHTML = '';
 
 	if (results){
 		results.unshift("original");
-		results.pop();
+		if (shouldPop) {
+			results.pop();
+		}
 		
 		let i = -1;
 		results.forEach(sample => {
@@ -469,6 +479,7 @@ function showSimilarResult(containerId, results) {
 			wrapper.appendChild(image);
 			wrapper.id = "comp-" + i;
 			container.appendChild(wrapper);
+			wrapper.dataset.id = sample.split("/").slice(-1);
 
 			wrapper.addEventListener("click", (e) => {
 				const id = parseInt(e.target.parentNode.id.substring(5));
@@ -479,6 +490,7 @@ function showSimilarResult(containerId, results) {
 				tryOn(person_url, garment_url);
 				runCompRecommendation(id, garment_url);
 				hightlight(document.getElementById("intra-results"), id);
+				selected_garment_id = wrapper.dataset.id;
 			})
 		});
 		
