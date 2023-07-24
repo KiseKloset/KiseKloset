@@ -27,11 +27,16 @@ url_download(
     url='https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-w6-pose.pt',
     output=str(CKPT_PATH / 'yolov7-w6-pose.pt'),
 )
+url_download(
+    url='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite',
+    output=str(CKPT_PATH / 'mediapipe_segmenter.tflite'),
+)
 
 tryon_service = TryonService(
     tryon_ckpt={'warp': CKPT_PATH / 'mobile_warp.pt', 'gen': CKPT_PATH / 'mobile_gen.pt'},
     edge_detect_ckpt=CKPT_PATH / 'u2netp.pt',
     yolo_ckpt=CKPT_PATH / 'yolov7-w6-pose.pt',
+    mediapipe_segment_ckpt=CKPT_PATH / 'mediapipe_segmenter.tflite',
     device='cuda:0',
 )
 
