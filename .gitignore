@@ -8,6 +8,7 @@ __pycache__/
 
 *.pth
 *.pt
+*.tflite
 
 # Distribution / packaging
 .Python
