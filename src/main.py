@@ -1,5 +1,6 @@
 import os
 import gdown
+import json
 import zipfile
 from pathlib import Path
 
@@ -20,8 +21,15 @@ from api.retrieval.router import router as retrieval_router
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent
 STATIC_PATH = ROOT / "static"
+LOGGED_IPS_PATH = './logged_ips.json'
+LOGGED_IPs = {}
 
-app = FastAPI(title='Smart Fashion API', version='1.1.0')
+app = FastAPI(
+    title='Smart Fashion API', 
+    version='1.1.0',
+    docs_url=None,
+    redoc_url=None,
+)
 app.mount("/static", StaticFiles(directory=STATIC_PATH))
 
 
@@ -42,13 +50,25 @@ app.add_middleware(
     allow_methods=["*"],
 )
 
-
 # Preload model, data, ...
 @app.on_event('startup')
 async def startup_event():
+    global LOGGED_IPs
     app.state.static_files = { "directory": str(ROOT / "static"), "prefix": "/static" }
     app.state.retrieval_content = service.preload("cuda:0")
+
+    # load logged ips file:
+    if Path(LOGGED_IPS_PATH).is_file():
+        with open(LOGGED_IPS_PATH) as f:
+            LOGGED_IPs = json.load(f)
     print("Finish startup")
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    global LOGGED_IPs
+    with open(LOGGED_IPS_PATH, 'w') as f:
+        json.dump(LOGGED_IPs, f)
 
 
 @app.exception_handler(RequestValidationError)
@@ -67,8 +87,24 @@ def perform_healthcheck() -> None:
     return JSONResponse(content={'message': 'success'})
 
 
+@app.get('/log-ips', status_code=status.HTTP_200_OK, tags=['log'])
+def perform_log_ips() -> None:
+    global LOGGED_IPs
+    with open(LOGGED_IPS_PATH, 'w') as f:
+        json.dump(LOGGED_IPs, f)
+    return JSONResponse(content={'message': 'success'})
+
+
 @app.get("/", response_class=HTMLResponse)
-async def home():
+async def home(request: Request):
+    # Log ip
+    global LOGGED_IPs
+    cip = str(request.client.host)
+    if LOGGED_IPs.get(cip) == None:
+        LOGGED_IPs[cip] = 1
+    else:
+        LOGGED_IPs[cip] += 1
+
     with open(ROOT / "templates/index.html") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content, status_code=200)
@@ -82,4 +118,4 @@ app.include_router(upscale_router, prefix="/upscale")
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run('main:app', host=settings.HOST, port=settings.PORT, reload=True)
+    uvicorn.run('main:app', host=settings.HOST, port=settings.PORT, reload=False)

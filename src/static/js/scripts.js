@@ -439,7 +439,7 @@ function parseResults(data) {
 		if (i.startsWith("Target ")) {
 			for (let item in data[i]) {
 				const url = data[i][item]["url"];
-				if (!url.includes(selected_garment_id)) {
+				if (selected_garment_id.length == 0 || !url.includes(selected_garment_id)) {
 					results.intra.push(url);
 				}
 			}

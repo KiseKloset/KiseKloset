@@ -3,6 +3,7 @@ import pickle
 import sys
 from pathlib import Path
 
+import time
 import os
 import gdown
 import zipfile
@@ -102,7 +103,46 @@ def preload(device):
      
         content["search_engine"][type] = SearchEngine.load(pretrained_dir, type)
 
+    benchmark(content)
+
     return content
+
+
+@torch.no_grad()
+def benchmark(content):
+    n = 100
+    image = PIL.Image.new("RGB", (192, 256), (255, 255, 255))
+    
+    #tgir extract only
+    content["models"]["clip4cir"](image, "")
+    start = time.time()
+    for _ in range(n):
+        content["models"]["clip4cir"](image, "")
+    torch.cuda.synchronize()
+    end = time.time()
+    print("Tgir extract only", (end - start) / n)
+
+    # tgir full
+    content["models"]["clip4cir"](image, "same")
+    start = time.time()
+    for _ in range(n):
+        content["models"]["clip4cir"](image, "same")
+    torch.cuda.synchronize()
+    end = time.time()
+    print("Tgir full", (end - start) / n)
+    
+    # ocir
+    mask = torch.full((11,), False)
+    mask[0] = True
+    embedding = content["models"]["clip4cir"](image, "")
+    content["models"]["outfits_transformer"](embedding, mask)
+    start = time.time()
+    for _ in range(n):
+        embedding = content["models"]["clip4cir"](image, "")
+        content["models"]["outfits_transformer"](embedding, mask)
+    torch.cuda.synchronize()
+    end = time.time()
+    print("Ocir", (end - start) / n)
 
 
 @torch.no_grad()
