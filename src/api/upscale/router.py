@@ -11,16 +11,12 @@ from .service import UpscaleService
 
 router = APIRouter()
 
-# upscale_service = UpscaleService(
-#     config='sesr_xl_2x_w8a8',
-#     device='cuda:0',
-# )
 
 upscale_service = UpscaleService(
     model_name = 'RealESRGAN_x4plus', 
     model_path = None,
     denoise_strength = 0.3,
-    outscale = 4,
+    outscale = 2,
     device = 'cuda:0'
 )
 
