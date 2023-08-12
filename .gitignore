@@ -137,3 +137,6 @@ images/
 dataset/
 data/
 pretrained/
+
+# Log
+logged_ips.json
