@@ -1,7 +1,7 @@
 <div align="center">
   <p>
     <a align="center" href="http://selab.edu.vn:20440" target="_blank">
-      <img width="50%" src="https://raw.githubusercontent.com/pntt3011/tehesis/assets/logo.png"></a>
+      <img width="50%" src="https://raw.githubusercontent.com/KiseKloset/KiseKloset/assets/logo.png"></a>
   </p>
 <br>
 
@@ -15,8 +15,8 @@ With KiseKloset, you can easily try on clothes virtually by uploading your photo
 ### 🧰 Install
 Clone this repo.
 ```
-git clone https://github.com/pntt3011/tehesis.git
-cd tehesis
+git clone https://github.com/KiseKloset/KiseKloset.git
+cd KiseKloset
 ```
 
 Install with `conda` (we provide script `install.sh`)
