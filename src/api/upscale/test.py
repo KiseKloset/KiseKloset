@@ -11,10 +11,12 @@
 """ AIMET evaluation code for QuickSRNet """
 
 import argparse
-from model import SESR
+
+from common.super_resolution.inference import run_model
 from common.super_resolution.psnr import evaluate_average_psnr
 from common.super_resolution.utils import load_dataset, post_process
-from common.super_resolution.inference import run_model
+
+from model import SESR
 
 
 # add arguments
@@ -45,12 +47,8 @@ def arguments():
         type=int,
         default=8,
     )
-    parser.add_argument(
-        "--batch-size", help="batch_size for loading data", type=int, default=16
-    )
-    parser.add_argument(
-        "--use-cuda", help="Run evaluation on GPU", type=bool, default=True
-    )
+    parser.add_argument("--batch-size", help="batch_size for loading data", type=int, default=16)
+    parser.add_argument("--use-cuda", help="Run evaluation on GPU", type=bool, default=True)
     args = parser.parse_args()
     return args
 
@@ -67,15 +65,14 @@ def main():
 
     IMAGES_LR, IMAGES_HR = load_dataset(args.dataset_path, model_fp32.scaling_factor)
 
-
     # Run model inference on test images and get super-resolved images
     IMAGES_SR_original_fp32 = run_model(model_fp32, IMAGES_LR, args.use_cuda)
     IMAGES_SR_original_int8 = run_model(model_int8, IMAGES_LR, args.use_cuda)
     print(IMAGES_LR[0].min(), IMAGES_LR[0].max())
     print(IMAGES_SR_original_fp32[0].min(), IMAGES_SR_original_fp32[0].max())
 
-    import numpy as np
     import cv2
+    import numpy as np
 
     cv_img = post_process(IMAGES_SR_original_int8[1])
     cv_img = cv2.cvtColor(cv_img, cv2.COLOR_RGB2BGR)

@@ -1,11 +1,12 @@
 import io
+import random
 import time
 from typing import Union
-import random
 
 import PIL.Image
 from fastapi import APIRouter, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
+
 from .service import get_category, get_item_name, ocir, query_top_k_items, tgir
 
 router = APIRouter()
@@ -21,11 +22,14 @@ def get_k_of_style(style):
         return 1
     except Exception as e:
         return 1
-        
+
 
 @router.post("/")
 async def image_retrieval(
-    ref_image: Union[UploadFile, None] = None, caption: str = Form(""), style: int = Form(TON_SUR_TON), request: Request = None
+    ref_image: Union[UploadFile, None] = None,
+    caption: str = Form(""),
+    style: int = Form(TON_SUR_TON),
+    request: Request = None,
 ):
     print("Request style", style, ", type", type(style))
 
@@ -50,7 +54,7 @@ async def image_retrieval(
     start = end
 
     if len(caption) == 0:
-        target_category = "tops" # "default"
+        target_category = "tops"  # "default"
     else:
         target_image_index = query_top_k_items(target_embedding, None, 1, api_content)[0]
         target_category = get_category(target_image_index, api_content)
@@ -67,7 +71,9 @@ async def image_retrieval(
     response["Target " + target_category] = []
     n_items = len(request.app.state.retrieval_content["categories"]) - 1
     assert n_items == 10
-    target_image_indices = retrieve_similar_items(target_embedding, target_category, n_items, api_content)
+    target_image_indices = retrieve_similar_items(
+        target_embedding, target_category, n_items, api_content
+    )
 
     for index in target_image_indices:
         assert get_category(index, api_content) == target_category
@@ -140,8 +146,16 @@ def retrieve_similar_items(target_embedding, target_category, n_items, api_conte
     else:
         far_items = []
 
-    print("Similar items:", "hard:", len(hard_items), ", near:", len(near_items), ", far:", len(far_items))
-    return [*hard_items, *near_items, *far_items] 
+    print(
+        "Similar items:",
+        "hard:",
+        len(hard_items),
+        ", near:",
+        len(near_items),
+        ", far:",
+        len(far_items),
+    )
+    return [*hard_items, *near_items, *far_items]
 
 
 def random_sample_order(mylist, sample_size):

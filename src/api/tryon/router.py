@@ -15,13 +15,16 @@ CKPT_PATH = Path('model')
 CKPT_PATH.mkdir(parents=True, exist_ok=True)
 
 gdrive_download(
-    url='https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy', output=str(CKPT_PATH / 'u2netp.pt')
+    url='https://drive.google.com/uc?id=1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy',
+    output=str(CKPT_PATH / 'u2netp.pt'),
 )
 gdrive_download(
-    url='https://drive.google.com/uc?id=1KJNKjqBeUF9CLcCRFyjONmKzcqjNgj9z', output=str(CKPT_PATH / 'mobile_warp.pt')
+    url='https://drive.google.com/uc?id=1KJNKjqBeUF9CLcCRFyjONmKzcqjNgj9z',
+    output=str(CKPT_PATH / 'mobile_warp.pt'),
 )
 gdrive_download(
-    url='https://drive.google.com/uc?id=1TP2OiEixy1WEjbJsdDYGL-214v_zkqUV', output=str(CKPT_PATH / 'mobile_gen.pt')
+    url='https://drive.google.com/uc?id=1TP2OiEixy1WEjbJsdDYGL-214v_zkqUV',
+    output=str(CKPT_PATH / 'mobile_gen.pt'),
 )
 url_download(
     url='https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-w6-pose.pt',

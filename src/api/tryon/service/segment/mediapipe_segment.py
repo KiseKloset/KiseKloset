@@ -1,7 +1,8 @@
-import numpy as np
 import mediapipe as mp
+import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+
 
 class MediapipeSegmentation:
     def __init__(self, model_path):

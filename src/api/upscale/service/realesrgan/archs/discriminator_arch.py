@@ -17,7 +17,7 @@ class UNetDiscriminatorSN(nn.Module):
     """
 
     def __init__(self, num_in_ch, num_feat=64, skip_connection=True):
-        super(UNetDiscriminatorSN, self).__init__()
+        super().__init__()
         self.skip_connection = skip_connection
         norm = spectral_norm
         # the first convolution

@@ -1,9 +1,10 @@
-import cv2
 import math
-import numpy as np
 import os
 import queue
 import threading
+
+import cv2
+import numpy as np
 import torch
 from basicsr.utils.download_util import load_file_from_url
 from torch.nn import functional as F
@@ -11,7 +12,7 @@ from torch.nn import functional as F
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-class RealESRGANer():
+class RealESRGANer:
     """A helper class for upsampling images with RealESRGAN.
 
     Args:
@@ -26,17 +27,19 @@ class RealESRGANer():
         half (float): Whether to use half precision during inference. Default: False.
     """
 
-    def __init__(self,
-                 scale,
-                 model_path,
-                 dni_weight=None,
-                 model=None,
-                 tile=0,
-                 tile_pad=10,
-                 pre_pad=10,
-                 half=False,
-                 device=None,
-                 gpu_id=None):
+    def __init__(
+        self,
+        scale,
+        model_path,
+        dni_weight=None,
+        model=None,
+        tile=0,
+        tile_pad=10,
+        pre_pad=10,
+        half=False,
+        device=None,
+        gpu_id=None,
+    ):
         self.scale = scale
         self.tile_size = tile
         self.tile_pad = tile_pad
@@ -46,20 +49,33 @@ class RealESRGANer():
 
         # initialize model
         if gpu_id:
-            self.device = torch.device(
-                f'cuda:{gpu_id}' if torch.cuda.is_available() else 'cpu') if device is None else device
+            self.device = (
+                torch.device(f'cuda:{gpu_id}' if torch.cuda.is_available() else 'cpu')
+                if device is None
+                else device
+            )
         else:
-            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if device is None else device
+            self.device = (
+                torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+                if device is None
+                else device
+            )
 
         if isinstance(model_path, list):
             # dni
-            assert len(model_path) == len(dni_weight), 'model_path and dni_weight should have the save length.'
+            assert len(model_path) == len(
+                dni_weight
+            ), 'model_path and dni_weight should have the save length.'
             loadnet = self.dni(model_path[0], model_path[1], dni_weight)
         else:
             # if the model_path starts with https, it will first download models to the folder: weights
             if model_path.startswith('https://'):
                 model_path = load_file_from_url(
-                    url=model_path, model_dir=os.path.join(ROOT_DIR, 'weights'), progress=True, file_name=None)
+                    url=model_path,
+                    model_dir=os.path.join(ROOT_DIR, 'weights'),
+                    progress=True,
+                    file_name=None,
+                )
             loadnet = torch.load(model_path, map_location=torch.device('cpu'))
 
         # prefer to use params_ema
@@ -86,8 +102,7 @@ class RealESRGANer():
         return net_a
 
     def pre_process(self, img):
-        """Pre-process, such as pre-pad and mod pad, so that the images can be divisible
-        """
+        """Pre-process, such as pre-pad and mod pad, so that the images can be divisible"""
         img = torch.from_numpy(np.transpose(img, (2, 0, 1))).float()
         self.img = img.unsqueeze(0).to(self.device)
         if self.half:
@@ -104,10 +119,10 @@ class RealESRGANer():
         if self.mod_scale is not None:
             self.mod_pad_h, self.mod_pad_w = 0, 0
             _, _, h, w = self.img.size()
-            if (h % self.mod_scale != 0):
-                self.mod_pad_h = (self.mod_scale - h % self.mod_scale)
-            if (w % self.mod_scale != 0):
-                self.mod_pad_w = (self.mod_scale - w % self.mod_scale)
+            if h % self.mod_scale != 0:
+                self.mod_pad_h = self.mod_scale - h % self.mod_scale
+            if w % self.mod_scale != 0:
+                self.mod_pad_w = self.mod_scale - w % self.mod_scale
             self.img = F.pad(self.img, (0, self.mod_pad_w, 0, self.mod_pad_h), 'reflect')
 
     def process(self):
@@ -152,7 +167,9 @@ class RealESRGANer():
                 input_tile_width = input_end_x - input_start_x
                 input_tile_height = input_end_y - input_start_y
                 tile_idx = y * tiles_x + x + 1
-                input_tile = self.img[:, :, input_start_y_pad:input_end_y_pad, input_start_x_pad:input_end_x_pad]
+                input_tile = self.img[
+                    :, :, input_start_y_pad:input_end_y_pad, input_start_x_pad:input_end_x_pad
+                ]
 
                 # upscale tile
                 try:
@@ -175,19 +192,28 @@ class RealESRGANer():
                 output_end_y_tile = output_start_y_tile + input_tile_height * self.scale
 
                 # put tile into output image
-                self.output[:, :, output_start_y:output_end_y,
-                            output_start_x:output_end_x] = output_tile[:, :, output_start_y_tile:output_end_y_tile,
-                                                                       output_start_x_tile:output_end_x_tile]
+                self.output[
+                    :, :, output_start_y:output_end_y, output_start_x:output_end_x
+                ] = output_tile[
+                    :,
+                    :,
+                    output_start_y_tile:output_end_y_tile,
+                    output_start_x_tile:output_end_x_tile,
+                ]
 
     def post_process(self):
         # remove extra pad
         if self.mod_scale is not None:
             _, _, h, w = self.output.size()
-            self.output = self.output[:, :, 0:h - self.mod_pad_h * self.scale, 0:w - self.mod_pad_w * self.scale]
+            self.output = self.output[
+                :, :, 0 : h - self.mod_pad_h * self.scale, 0 : w - self.mod_pad_w * self.scale
+            ]
         # remove prepad
         if self.pre_pad != 0:
             _, _, h, w = self.output.size()
-            self.output = self.output[:, :, 0:h - self.pre_pad * self.scale, 0:w - self.pre_pad * self.scale]
+            self.output = self.output[
+                :, :, 0 : h - self.pre_pad * self.scale, 0 : w - self.pre_pad * self.scale
+            ]
         return self.output
 
     @torch.no_grad()
@@ -241,7 +267,9 @@ class RealESRGANer():
                 output_alpha = cv2.cvtColor(output_alpha, cv2.COLOR_BGR2GRAY)
             else:  # use the cv2 resize for alpha channel
                 h, w = alpha.shape[0:2]
-                output_alpha = cv2.resize(alpha, (w * self.scale, h * self.scale), interpolation=cv2.INTER_LINEAR)
+                output_alpha = cv2.resize(
+                    alpha, (w * self.scale, h * self.scale), interpolation=cv2.INTER_LINEAR
+                )
 
             # merge the alpha channel
             output_img = cv2.cvtColor(output_img, cv2.COLOR_BGR2BGRA)
@@ -255,10 +283,13 @@ class RealESRGANer():
 
         if outscale is not None and outscale != float(self.scale):
             output = cv2.resize(
-                output, (
+                output,
+                (
                     int(w_input * outscale),
                     int(h_input * outscale),
-                ), interpolation=cv2.INTER_LANCZOS4)
+                ),
+                interpolation=cv2.INTER_LANCZOS4,
+            )
 
         return output, img_mode
 
@@ -294,7 +325,6 @@ class PrefetchReader(threading.Thread):
 
 
 class IOConsumer(threading.Thread):
-
     def __init__(self, opt, que, qid):
         super().__init__()
         self._queue = que

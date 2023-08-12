@@ -7,15 +7,21 @@ from PIL import Image
 from torch.autograd import Variable
 
 from .dm_vton import DMVTON, get_transform
+from .segment import MediapipeSegmentation
 from .u2net import load_model as load_edge_detect_model
 from .u2net import norm_pred
 from .yolov7_pose import Yolov7PoseEstimation
-from .segment import MediapipeSegmentation
 
 
 class TryonService:
     def __init__(
-        self, tryon_ckpt, edge_detect_ckpt, yolo_ckpt, mediapipe_segment_ckpt, device, img_size=(192, 256)
+        self,
+        tryon_ckpt,
+        edge_detect_ckpt,
+        yolo_ckpt,
+        mediapipe_segment_ckpt,
+        device,
+        img_size=(192, 256),
     ) -> None:
         self.device = device
         self.img_size = img_size
@@ -27,7 +33,7 @@ class TryonService:
     @torch.no_grad()
     def tryon_image(self, pil_img, pil_clothes, pil_edge=None) -> Any:
         image = np.asarray(pil_img)
-        
+
         image, image_with_background, mask = self._remove_background(image, threshold=0.5)
         cropped_result, frame = self._preprocess_frame(image)
 
@@ -66,7 +72,7 @@ class TryonService:
 
         output = (output * mask + image_with_background * (1 - mask)).astype(np.uint8)
         return output
-        
+
     def _preprocess_image(self, pil_img, color='RGB'):
         pil_img = pil_img.convert(color).resize(self.img_size)
         return pil_img
@@ -148,6 +154,7 @@ class TryonService:
 
     def _load_mediapipe_segmenter(self, mediapipe_segment_ckpt):
         self.mediapipe_segmenter = MediapipeSegmentation(model_path=mediapipe_segment_ckpt)
+
 
 def crop_upper_body(frame, pose_detector):
     results = pose_detector.process(frame)

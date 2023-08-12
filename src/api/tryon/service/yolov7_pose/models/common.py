@@ -8,7 +8,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from PIL import Image
 from torch.cuda import amp
-
 from yolov7_utils.datasets import letterbox
 from yolov7_utils.general import (increment_path, make_divisible, non_max_suppression, scale_coords,
                                   xyxy2xywh,)

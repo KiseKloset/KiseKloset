@@ -1,22 +1,20 @@
-import os
-import gdown
 import json
+import os
 import zipfile
 from pathlib import Path
 
+import gdown
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from config import settings
 from api.tryon.router import router as tryon_router
-from api.upscale.router import router as upscale_router 
-
 from api.retrieval import service
 from api.retrieval.router import router as retrieval_router
-
+from api.upscale.router import router as upscale_router
+from config import settings
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent
@@ -25,7 +23,7 @@ LOGGED_IPS_PATH = './logged_ips.json'
 LOGGED_IPs = {}
 
 app = FastAPI(
-    title='Smart Fashion API', 
+    title='Smart Fashion API',
     version='1.1.0',
     docs_url=None,
     redoc_url=None,
@@ -39,7 +37,7 @@ if not (STATIC_PATH / "images").exists():
     gdown.download("https://drive.google.com/uc?id=1pNIbQcflAlyUAYypASSy7UfevI4sFcMC", out)
     with zipfile.ZipFile(out, 'r') as zip_ref:
         zip_ref.extractall(str(STATIC_PATH))
-    os.remove(out)  
+    os.remove(out)
 
 origins = ['*']
 app.add_middleware(
@@ -50,11 +48,12 @@ app.add_middleware(
     allow_methods=["*"],
 )
 
+
 # Preload model, data, ...
 @app.on_event('startup')
 async def startup_event():
     global LOGGED_IPs
-    app.state.static_files = { "directory": str(ROOT / "static"), "prefix": "/static" }
+    app.state.static_files = {"directory": str(ROOT / "static"), "prefix": "/static"}
     app.state.retrieval_content = service.preload("cuda:0")
 
     # load logged ips file:

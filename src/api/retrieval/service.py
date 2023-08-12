@@ -1,12 +1,12 @@
 import json
+import os
 import pickle
 import sys
+import time
+import zipfile
 from pathlib import Path
 
-import time
-import os
 import gdown
-import zipfile
 import numpy as np
 import PIL.Image
 import torch
@@ -33,7 +33,7 @@ def preload(device):
         gdown.download("https://drive.google.com/uc?id=1qRP24WngO52MlxXVHOVzhXHql9GlsaUg", out)
         with zipfile.ZipFile(out, 'r') as zip_ref:
             zip_ref.extractall(str(pretrained_dir))
-        os.remove(out)   
+        os.remove(out)
 
     # Load models
     content["models"] = {}
@@ -53,7 +53,7 @@ def preload(device):
         gdown.download("https://drive.google.com/uc?id=1gFy4bmscwXCt65duIfd7b1wkdkmTJelh", out)
         with zipfile.ZipFile(out, 'r') as zip_ref:
             zip_ref.extractall(str(ROOT))
-        os.remove(out)   
+        os.remove(out)
 
     # Load item names
     with open(data_dir / "polyvore_index_names.pkl", "rb") as f:
@@ -86,21 +86,34 @@ def preload(device):
 
     # Load item embeddings and save to approximate searching
     content["search_engine"] = {}
-    features = torch.nn.functional.normalize(
-        torch.load(data_dir / "polyvore_index_embeddings.pt", map_location=device).type(torch.float32)
-    ).cpu().detach().numpy()
+    features = (
+        torch.nn.functional.normalize(
+            torch.load(data_dir / "polyvore_index_embeddings.pt", map_location=device).type(
+                torch.float32
+            )
+        )
+        .cpu()
+        .detach()
+        .numpy()
+    )
     index_types = ["all", *content["categories"]]
     for type in index_types:
         if not SearchEngine.can_load(pretrained_dir, type):
             if type != "all":
-                category_indices = np.array([i for i in content["index_metadatas"] if content["index_metadatas"][i]["category"] == type])
+                category_indices = np.array(
+                    [
+                        i
+                        for i in content["index_metadatas"]
+                        if content["index_metadatas"][i]["category"] == type
+                    ]
+                )
             else:
                 category_indices = np.arange(len(features))
             category_features = features[category_indices]
 
             index = SearchEngine(category_indices, category_features)
             SearchEngine.save(index, pretrained_dir, type)
-     
+
         content["search_engine"][type] = SearchEngine.load(pretrained_dir, type)
 
     benchmark(content)
@@ -112,8 +125,8 @@ def preload(device):
 def benchmark(content):
     n = 100
     image = PIL.Image.new("RGB", (192, 256), (255, 255, 255))
-    
-    #tgir extract only
+
+    # tgir extract only
     content["models"]["clip4cir"](image, "")
     start = time.time()
     for _ in range(n):
@@ -130,7 +143,7 @@ def benchmark(content):
     torch.cuda.synchronize()
     end = time.time()
     print("Tgir full", (end - start) / n)
-    
+
     # ocir
     mask = torch.full((11,), False)
     mask[0] = True
@@ -166,7 +179,7 @@ def ocir(embedding, category: str, api_content: dict):
 def query_top_k_items(embedding, category, top_k, api_content: dict):
     if category == None:
         category = "all"
-    
+
     search_engine = api_content["search_engine"][category]
     results = search_engine.run(embedding, top_k)
     return results

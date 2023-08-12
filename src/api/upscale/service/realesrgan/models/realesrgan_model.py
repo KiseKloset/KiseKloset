@@ -1,5 +1,7 @@
-import numpy as np
 import random
+from collections import OrderedDict
+
+import numpy as np
 import torch
 from basicsr.data.degradations import random_add_gaussian_noise_pt, random_add_poisson_noise_pt
 from basicsr.data.transforms import paired_random_crop
@@ -7,7 +9,6 @@ from basicsr.models.srgan_model import SRGANModel
 from basicsr.utils import DiffJPEG, USMSharp
 from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
-from collections import OrderedDict
 from torch.nn import functional as F
 
 
@@ -21,7 +22,7 @@ class RealESRGANModel(SRGANModel):
     """
 
     def __init__(self, opt):
-        super(RealESRGANModel, self).__init__(opt)
+        super().__init__(opt)
         self.jpeger = DiffJPEG(differentiable=False).cuda()  # simulate JPEG compression artifacts
         self.usm_sharpener = USMSharp().cuda()  # do usm sharpening
         self.queue_size = opt.get('queue_size', 180)
@@ -37,7 +38,9 @@ class RealESRGANModel(SRGANModel):
         # initialize
         b, c, h, w = self.lq.size()
         if not hasattr(self, 'queue_lr'):
-            assert self.queue_size % b == 0, f'queue size {self.queue_size} should be divisible by batch size {b}'
+            assert (
+                self.queue_size % b == 0
+            ), f'queue size {self.queue_size} should be divisible by batch size {b}'
             self.queue_lr = torch.zeros(self.queue_size, c, h, w).cuda()
             _, c, h, w = self.gt.size()
             self.queue_gt = torch.zeros(self.queue_size, c, h, w).cuda()
@@ -59,14 +62,13 @@ class RealESRGANModel(SRGANModel):
             self.gt = gt_dequeue
         else:
             # only do enqueue
-            self.queue_lr[self.queue_ptr:self.queue_ptr + b, :, :, :] = self.lq.clone()
-            self.queue_gt[self.queue_ptr:self.queue_ptr + b, :, :, :] = self.gt.clone()
+            self.queue_lr[self.queue_ptr : self.queue_ptr + b, :, :, :] = self.lq.clone()
+            self.queue_gt[self.queue_ptr : self.queue_ptr + b, :, :, :] = self.gt.clone()
             self.queue_ptr = self.queue_ptr + b
 
     @torch.no_grad()
     def feed_data(self, data):
-        """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
-        """
+        """Accept data from dataloader, and then add two-order degradations to obtain LQ images."""
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
@@ -95,17 +97,25 @@ class RealESRGANModel(SRGANModel):
             gray_noise_prob = self.opt['gray_noise_prob']
             if np.random.uniform() < self.opt['gaussian_noise_prob']:
                 out = random_add_gaussian_noise_pt(
-                    out, sigma_range=self.opt['noise_range'], clip=True, rounds=False, gray_prob=gray_noise_prob)
+                    out,
+                    sigma_range=self.opt['noise_range'],
+                    clip=True,
+                    rounds=False,
+                    gray_prob=gray_noise_prob,
+                )
             else:
                 out = random_add_poisson_noise_pt(
                     out,
                     scale_range=self.opt['poisson_scale_range'],
                     gray_prob=gray_noise_prob,
                     clip=True,
-                    rounds=False)
+                    rounds=False,
+                )
             # JPEG compression
             jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range'])
-            out = torch.clamp(out, 0, 1)  # clamp to [0, 1], otherwise JPEGer will result in unpleasant artifacts
+            out = torch.clamp(
+                out, 0, 1
+            )  # clamp to [0, 1], otherwise JPEGer will result in unpleasant artifacts
             out = self.jpeger(out, quality=jpeg_p)
 
             # ----------------------- The second degradation process ----------------------- #
@@ -122,19 +132,31 @@ class RealESRGANModel(SRGANModel):
                 scale = 1
             mode = random.choice(['area', 'bilinear', 'bicubic'])
             out = F.interpolate(
-                out, size=(int(ori_h / self.opt['scale'] * scale), int(ori_w / self.opt['scale'] * scale)), mode=mode)
+                out,
+                size=(
+                    int(ori_h / self.opt['scale'] * scale),
+                    int(ori_w / self.opt['scale'] * scale),
+                ),
+                mode=mode,
+            )
             # add noise
             gray_noise_prob = self.opt['gray_noise_prob2']
             if np.random.uniform() < self.opt['gaussian_noise_prob2']:
                 out = random_add_gaussian_noise_pt(
-                    out, sigma_range=self.opt['noise_range2'], clip=True, rounds=False, gray_prob=gray_noise_prob)
+                    out,
+                    sigma_range=self.opt['noise_range2'],
+                    clip=True,
+                    rounds=False,
+                    gray_prob=gray_noise_prob,
+                )
             else:
                 out = random_add_poisson_noise_pt(
                     out,
                     scale_range=self.opt['poisson_scale_range2'],
                     gray_prob=gray_noise_prob,
                     clip=True,
-                    rounds=False)
+                    rounds=False,
+                )
 
             # JPEG compression + the final sinc filter
             # We also need to resize images to desired sizes. We group [resize back + sinc filter] together
@@ -146,7 +168,9 @@ class RealESRGANModel(SRGANModel):
             if np.random.uniform() < 0.5:
                 # resize back + the final sinc filter
                 mode = random.choice(['area', 'bilinear', 'bicubic'])
-                out = F.interpolate(out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode)
+                out = F.interpolate(
+                    out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode
+                )
                 out = filter2D(out, self.sinc_kernel)
                 # JPEG compression
                 jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range2'])
@@ -159,22 +183,27 @@ class RealESRGANModel(SRGANModel):
                 out = self.jpeger(out, quality=jpeg_p)
                 # resize back + the final sinc filter
                 mode = random.choice(['area', 'bilinear', 'bicubic'])
-                out = F.interpolate(out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode)
+                out = F.interpolate(
+                    out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode
+                )
                 out = filter2D(out, self.sinc_kernel)
 
             # clamp and round
-            self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
+            self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.0
 
             # random crop
             gt_size = self.opt['gt_size']
-            (self.gt, self.gt_usm), self.lq = paired_random_crop([self.gt, self.gt_usm], self.lq, gt_size,
-                                                                 self.opt['scale'])
+            (self.gt, self.gt_usm), self.lq = paired_random_crop(
+                [self.gt, self.gt_usm], self.lq, gt_size, self.opt['scale']
+            )
 
             # training pair pool
             self._dequeue_and_enqueue()
             # sharpen self.gt again, as we have changed the self.gt with self._dequeue_and_enqueue
             self.gt_usm = self.usm_sharpener(self.gt)
-            self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
+            self.lq = (
+                self.lq.contiguous()
+            )  # for the warning: grad and param do not obey the gradient layout contract
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
@@ -185,7 +214,7 @@ class RealESRGANModel(SRGANModel):
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
-        super(RealESRGANModel, self).nondist_validation(dataloader, current_iter, tb_logger, save_img)
+        super().nondist_validation(dataloader, current_iter, tb_logger, save_img)
         self.is_train = True
 
     def optimize_parameters(self, current_iter):
@@ -209,7 +238,7 @@ class RealESRGANModel(SRGANModel):
 
         l_g_total = 0
         loss_dict = OrderedDict()
-        if (current_iter % self.net_d_iters == 0 and current_iter > self.net_d_init_iters):
+        if current_iter % self.net_d_iters == 0 and current_iter > self.net_d_init_iters:
             # pixel loss
             if self.cri_pix:
                 l_g_pix = self.cri_pix(self.output, l1_gt)

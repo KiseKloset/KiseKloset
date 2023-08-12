@@ -8,16 +8,15 @@ from PIL import Image
 
 from .service import UpscaleService
 
-
 router = APIRouter()
 
 
 upscale_service = UpscaleService(
-    model_name = 'RealESRGAN_x4plus', 
-    model_path = None,
-    denoise_strength = 0.3,
-    outscale = 2,
-    device = 'cuda:0'
+    model_name='RealESRGAN_x4plus',
+    model_path=None,
+    denoise_strength=0.3,
+    outscale=2,
+    device='cuda:0',
 )
 
 
@@ -32,7 +31,7 @@ async def upsclae_image(image: UploadFile):
     if cv_img is not None:
         pil_result = Image.fromarray(cv_img)
     else:
-        pil_result = pil_img    
+        pil_result = pil_img
 
     image_buffer = BytesIO()
     pil_result.save(image_buffer, 'JPEG')

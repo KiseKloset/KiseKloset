@@ -97,7 +97,7 @@ function get_sample(type){
 	let samples = [];
 	let samplesPath = "static/samples/" + type + "/";
 	if (type=="model"){
-		let files = ["000020_0.jpg", "000228_0.jpg", "000619_0.jpg", "001387_0.jpg", "002371_0.jpg", 
+		let files = ["000020_0.jpg", "000228_0.jpg", "000619_0.jpg", "001387_0.jpg", "002371_0.jpg",
 				"002523_0.jpg", "004423_0.jpg", "010057_0.jpg", "014612_0.jpg", "019243_0.jpg"];
 		for (let i = 0; i < files.length; ++i) {
 			samples.push(samplesPath + files[i]);
@@ -129,7 +129,7 @@ function setup_upload_container(step){
 		upload_instructor.style.display = "block";
 		upload_instructor.innerHTML = "Drop file here or click to upload";
 	}
-	
+
 	if (step==1){
 		step_instruction.innerHTML = "Upload your model OR select from list, then click \"Next\"";
 		step_instruction_note.innerHTML = "Simple or uniform background is preferred";
@@ -352,7 +352,7 @@ function show_before_after_result(before_data, after_data) {
 
 	show(document.getElementById("result-after-container"));
 	document.getElementById("result-after").src = after_data;
-	
+
 	show(document.getElementById("result-slider"));
 	current_slider = new BeforeAfter("upload-zone");
 }
@@ -374,7 +374,7 @@ function runRecommendation(garment_url, caption, style) {
     body.append("ref_image", garment_url);
     body.append("caption", caption);
 	body.append("style", style);
-	const styleHash = 0 * NUM_STYLE + style; 
+	const styleHash = 0 * NUM_STYLE + style;
 	fetch('/retrieval', {
 		method: 'POST',
         headers: {
@@ -408,7 +408,7 @@ function runCompRecommendation(index, garment_url, style) {
 		body.append("ref_image", garment_url);
 		body.append("caption", "");
 		body.append("style", style);
-	
+
 		fetch('/retrieval', {
 			method: 'POST',
 			headers: {
@@ -419,21 +419,21 @@ function runCompRecommendation(index, garment_url, style) {
 			const data = await response.json();
 			compCache[styleHash] = data;
 			const results = parseResults(data);
-			showCompResult("inter-results", results.inter);	
+			showCompResult("inter-results", results.inter);
 
 			document.getElementById("retrieval-loader").style.display = "none";
 		})
 	} else {
 		const results = parseResults(compCache[styleHash]);
-		showCompResult("inter-results", results.inter);	
+		showCompResult("inter-results", results.inter);
 		document.getElementById("retrieval-loader").style.display = "none";
 	}
 }
 
 function parseResults(data) {
 	const results = {
-		"intra": [], 
-		"inter": [] 
+		"intra": [],
+		"inter": []
 	}
 	for (let i in data) {
 		if (i.startsWith("Target ")) {
@@ -452,8 +452,8 @@ function parseResults(data) {
 
 function showResults(results) {
 	document.getElementById("retrieval-container").style.display = "block";
-	showSimilarResult("intra-results", results.intra, results.intra.length >= results.inter.length);	
-	showCompResult("inter-results", results.inter);	
+	showSimilarResult("intra-results", results.intra, results.intra.length >= results.inter.length);
+	showCompResult("inter-results", results.inter);
 }
 
 function showSimilarResult(containerId, results, shouldPop) {
@@ -465,12 +465,12 @@ function showSimilarResult(containerId, results, shouldPop) {
 		if (shouldPop) {
 			results.pop();
 		}
-		
+
 		let i = -1;
 		results.forEach(sample => {
 			i += 1;
 			const wrapper = createItemRecommendationWrapper();
-			const image = createItemRecommendationImage(true); 
+			const image = createItemRecommendationImage(true);
 
 			if (sample === "original") {
 				image.src = URLtoData(garment_image.style.backgroundImage);
@@ -495,7 +495,7 @@ function showSimilarResult(containerId, results, shouldPop) {
 				selected_garment_id = wrapper.dataset.id;
 			})
 		});
-		
+
 		hightlight(container, 0);
 	}
 }
@@ -507,11 +507,11 @@ function showCompResult(containerId, results) {
 	if (results){
 		results.forEach(sample => {
 			const wrapper = createItemRecommendationWrapper();
-			const image = createItemRecommendationImage(false); 
+			const image = createItemRecommendationImage(false);
 			convertImagePathToDataURL(image, sample);
 			wrapper.appendChild(image);
 			container.appendChild(wrapper);
-		});		
+		});
 	}
 }
 
@@ -544,8 +544,8 @@ let highlightIndex = 0;
 function hightlight(container, childIndex) {
 	for (let i = 0; i < container.children.length; i++) {
 		container.children[i].style.setProperty('box-shadow', '');
-		container.children[i].style.marginLeft = "0px"; 
-		container.children[i].style.marginRight = "0px"; 
+		container.children[i].style.marginLeft = "0px";
+		container.children[i].style.marginRight = "0px";
 	}
 	highlightIndex = childIndex;
 	container.children[childIndex].style.setProperty('box-shadow', '0px 0px 7px 0px rgba(0,255,255,0.7), 0px 0px 14px 0px rgba(0,255,255,0.7), 0px 0px 28px 0px rgba(0,255,255,0.7), 0px 0px 56px 0px rgba(0,255,255,0.7)', 'important');
