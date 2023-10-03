@@ -10,9 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from api.tryon.router import router as tryon_router
 from api.retrieval import service
 from api.retrieval.router import router as retrieval_router
+from api.tryon.router import router as tryon_router
 from api.upscale.router import router as upscale_router
 from config import settings
 

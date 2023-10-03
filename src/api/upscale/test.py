@@ -15,7 +15,6 @@ import argparse
 from common.super_resolution.inference import run_model
 from common.super_resolution.psnr import evaluate_average_psnr
 from common.super_resolution.utils import load_dataset, post_process
-
 from model import SESR
 
 
