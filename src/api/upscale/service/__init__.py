@@ -5,9 +5,8 @@ import torch
 import torchvision as tv
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
-from PIL import Image
-
 from gfpgan import GFPGANer
+from PIL import Image
 
 from .realesrgan import RealESRGANer
 from .realesrgan.archs.srvgg_arch import SRVGGNetCompact

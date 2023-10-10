@@ -23,14 +23,14 @@ repos:
         args: [--autofix, --indent=4, --no-ensure-ascii, --no-sort-keys]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.8.0
+    rev: v3.14.0
     hooks:
       - id: pyupgrade
         name: Upgrade code
         args: [ --py37-plus ]
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.9.1
     hooks:
       - id: black
         name: PEP8 formatting
@@ -43,7 +43,7 @@ repos:
         name: I-sort imports
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
       - id: flake8
         name: PEP8 checker
