@@ -30,20 +30,20 @@ repos:
         args: [ --py37-plus ]
 
   - repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 24.1.1
     hooks:
       - id: black
         name: PEP8 formatting
         args: [ --skip-string-normalization, --line-length=100]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
         name: I-sort imports
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         name: PEP8 checker
