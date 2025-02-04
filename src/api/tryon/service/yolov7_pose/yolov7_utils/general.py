@@ -702,9 +702,7 @@ def box_ciou(box1, box2, eps: float = 1e-7):
     w_gt = box2[:, 2] - box2[:, 0]
     h_gt = box2[:, 3] - box2[:, 1]
 
-    v = (4 / (torch.pi**2)) * torch.pow(
-        (torch.atan(w_gt / h_gt) - torch.atan(w_pred / h_pred)), 2
-    )
+    v = (4 / (torch.pi**2)) * torch.pow((torch.atan(w_gt / h_gt) - torch.atan(w_pred / h_pred)), 2)
     with torch.no_grad():
         alpha = v / (1 - iou + v + eps)
     return iou - (centers_distance_squared / diagonal_distance_squared) - alpha * v

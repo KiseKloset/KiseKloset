@@ -1463,9 +1463,9 @@ def extract_boxes(
     # Convert detection dataset into classification dataset, with one directory per class
 
     path = Path(path)  # images dir
-    shutil.rmtree(path / 'classifier') if (
-        path / 'classifier'
-    ).is_dir() else None  # remove existing
+    (
+        shutil.rmtree(path / 'classifier') if (path / 'classifier').is_dir() else None
+    )  # remove existing
     files = list(path.rglob('*.*'))
     n = len(files)  # number of files
     for im_file in tqdm(files, total=n):

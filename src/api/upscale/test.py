@@ -8,7 +8,7 @@
 #  @@-COPYRIGHT-END-@@
 # =============================================================================
 
-""" AIMET evaluation code for QuickSRNet """
+"""AIMET evaluation code for QuickSRNet"""
 
 import argparse
 
