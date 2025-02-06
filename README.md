@@ -12,6 +12,8 @@ With KiseKloset, you can easily try on clothes virtually by uploading your photo
 <br>
 
 ## <div align="center">📝 Documentation</div>
+**⚠️ This repo is no longer maintained.**
+
 ### 🧰 Install
 Clone this repo.
 ```
