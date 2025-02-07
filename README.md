@@ -14,6 +14,19 @@ With KiseKloset, you can easily try on clothes virtually by uploading your photo
 ## <div align="center">📝 Documentation</div>
 **⚠️ This repo is no longer maintained.**
 
+**⚠️ About error download link**
+
+We had accidentally deleted these links and couldn't find a way to recover them. You can try these steps to reproduce the download file (not verified):
+
+1) https://drive.google.com/uc?id=1qRP24WngO52MlxXVHOVzhXHql9GlsaUg, which includes 4 models:
+- outfit_transformer.pt : [here](https://drive.google.com/file/d/1SrR0npYTRWfU4SzqaX70YRzr5xE4_w4A)
+- clip_ft.pt, combiner.pt: [here](https://drive.google.com/drive/folders/1BPE33_XSm33Min0OaGW2Sl9rcddZ-WF-)
+- clip.ft: You can remove this model in the code, just use clip.load("RN50x4", jit=False) instead in this [line](https://github.com/KiseKloset/KiseKloset/blob/265a80e8be899f6c2016d910cc222f14935d7ef6/src/api/retrieval/model/clip4cir.py#L86)
+
+2) https://drive.google.com/uc?id=1pNIbQcflAlyUAYypASSy7UfevI4sFcMC:
+You can download the original dataset [here](https://github.com/AemikaChow/AiDLab-fAshIon-Data/blob/main/Datasets/cleaned-maryland.md) and move all images into a single folder "images".
+In our version, we also remove some invalid images (no metadata, etc), but that should not affect so much.
+
 ### 🧰 Install
 Clone this repo.
 ```
